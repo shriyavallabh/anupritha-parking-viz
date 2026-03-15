@@ -139,7 +139,7 @@ app(el('rect', { x:0, y:0, width:2200, height:3800, class:'bg' }));
 
 // ─── BACK DRIVEWAY ────────────────────────────────────────
 app(el('rect', { x:0, y:0, width:2200, height:194, class:'dwy' }));
-app(el('text', { x:1100, y:108, class:'dwy-txt', 'text-anchor':'middle',
+app(el('text', { x:1100, y:155, class:'dwy-txt', 'text-anchor':'middle',
                  'dominant-baseline':'central' }, 'ELEVATION-3  —  DRIVE WAY'));
 
 // ─── BUND WALL ────────────────────────────────────────────
@@ -238,16 +238,20 @@ renderStack([24, 25, 26], 1600, 2940, 'stack');
 app(el('rect', { x:0, y:0, width:2200, height:3800, class:'site-bnd' }));
 
 // ─── ZONE DIRECTION LABELS ────────────────────────────────
-app(el('text', { x:1100, y:148, class:'zlbl',
+// BACK SIDE — above driveway text (moved to y=60 so it clears y=155 driveway label)
+app(el('text', { x:1100, y:60, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central' }, 'BACK SIDE'));
-app(el('text', { x:1100, y:3770, class:'zlbl',
+// FRONT SIDE — below front slots
+app(el('text', { x:1100, y:3750, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central' }, 'FRONT SIDE'));
-app(el('text', { x:100, y:1900, class:'zlbl',
+// SOUTH SIDE — rotated, at x=22 so it stays clear of slot boxes (x=50+)
+app(el('text', { x:22, y:1900, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central',
-                 transform:'rotate(-90,100,1900)' }, 'SOUTH SIDE'));
-app(el('text', { x:2100, y:1900, class:'zlbl',
+                 transform:'rotate(-90,22,1900)' }, 'SOUTH SIDE'));
+// NORTH SIDE — rotated, at x=2178 so it stays clear of slot boxes (x=2150-)
+app(el('text', { x:2178, y:1900, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central',
-                 transform:'rotate(90,2100,1900)' }, 'NORTH SIDE'));
+                 transform:'rotate(90,2178,1900)' }, 'NORTH SIDE'));
 </script>
 </body>
 </html>
