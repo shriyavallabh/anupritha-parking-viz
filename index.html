@@ -3,216 +3,317 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anupritha B — Parking Slots</title>
+<title>Anupritha B — Parking Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a1a; --card: #141428; --border: #2a2a4a;
-    --text: #e8e8f0; --muted: #5a5a7a;
-    --slot: 42px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  header { text-align: center; padding: 18px 16px 8px; }
-  header h1 { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  header p { color: var(--muted); font-size: 0.75rem; margin-top: 4px; }
-
-  /* ── MAP ── */
-  .map-container { max-width: 720px; margin: 16px auto; padding: 0 10px; }
-  .map { position: relative; width: 100%; aspect-ratio: 1 / 1.55; }
-
-  /* ── SLOTS — all neutral, equal size ── */
-  .slot {
-    width: var(--slot); height: var(--slot);
-    flex: none;
-    background: var(--card);
-    border: 1.5px solid #3a3a5a;
-    border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .slot-num { font-size: 0.75rem; font-weight: 700; color: #8888bb; }
-
-  /* ── PARKING GROUP ── */
-  .pg {
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    padding: 3px 4px; border-radius: 6px;
-    background: rgba(255,255,255,0.03);
-    border: 1px dashed #2a2a4a;
-  }
-  .pg-label {
-    font-size: 0.42rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.5px; color: var(--muted); white-space: nowrap;
-  }
-  .pg-row { display: flex; flex-direction: row; gap: 3px; }
-
-  /* ── ZONES ── */
-  .zone { position: absolute; z-index: 3; }
-
-  .zone-back {
-    top: 1%; left: 5%; width: 89%; height: 18%;
-    display: flex; gap: 1.5%; padding: 1% 0.5%;
-    align-items: flex-end; justify-content: center;
-  }
-  .zone-back .pg { flex: 1; }
-  .zone-back .pg-row { flex-direction: column; align-items: center; gap: 3px; }
-
-  /* Side zones span the full building height — children are absolutely placed */
-  .zone-left {
-    top: 21%; left: 0%; width: 13%; height: 52%;
-  }
-  .zone-right {
-    top: 21%; right: 0%; width: 24%; height: 52%;
-  }
-  .zone-left  .pg,
-  .zone-right .pg {
-    position: absolute;
-    left: 50%; transform: translateX(-50%);
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
   }
 
-  .zone-bottom {
-    bottom: 1%; left: 1%; width: 98%; height: 20%;
-    display: flex; gap: 1%; padding: 1% 0.5%;
-    align-items: flex-start; justify-content: center;
+  .header {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 36px 24px 20px;
+  }
+  .header h1 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #0f172a;
+  }
+  .header p {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-top: 5px;
+    font-weight: 400;
+  }
+  .header-divider {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
+    border-bottom: 1px solid #e2e8f0;
   }
 
-  /* ── BUILDING ── */
-  .building {
-    position: absolute; top: 21%; left: 15%; width: 59%; height: 52%;
-    background: linear-gradient(135deg, #1a1a30, #202045);
-    border: 2px solid #3a3a6a; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center; flex-direction: column;
-    z-index: 2;
+  .map-wrap {
+    max-width: 780px;
+    margin: 28px auto 60px;
+    padding: 0 24px;
   }
-  .building-icon   { font-size: 1.8rem; margin-bottom: 4px; }
-  .building-name   { font-size: 1rem; font-weight: 700; color: #5a5a9a; }
-  .building-sub    { font-size: 0.6rem; color: #3a3a6a; margin-top: 2px; }
-  .building-floors { font-size: 0.52rem; color: #2e2e55; margin-top: 8px; letter-spacing: 0.4px; }
 
-  /* ── DIRECTION LABELS ── */
-  .zone-label {
-    position: absolute; z-index: 4;
-    font-size: 0.6rem; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    color: #6060a0;
-    background: rgba(10,10,26,0.85);
-    padding: 2px 8px; border-radius: 4px;
-    white-space: nowrap;
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.06), 0 4px 16px rgba(15,23,42,0.04);
   }
-  .label-back   { top: 0.4%;   left: 50%; transform: translateX(-50%); }
-  .label-front  { bottom: 21.8%; left: 50%; transform: translateX(-50%); }
-  .label-south  { top: 47%; left: 0.2%; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; }
-  .label-north  { top: 47%; right: 0%;  transform: rotate(90deg) translateX(50%);  transform-origin: right center; }
 
-  /* ── DRIVEWAY BANNERS ── */
-  .driveway-banner {
-    position: absolute; z-index: 1; left: 5%; width: 90%;
-    text-align: center; font-size: 0.5rem; letter-spacing: 2px;
-    text-transform: uppercase; color: #2a2a4a; padding: 2px 0;
-    border-top: 1px dashed rgba(255,255,255,0.05);
-    border-bottom: 1px dashed rgba(255,255,255,0.05);
-  }
-  .driveway-banner.top    { top: 20%; }
-  .driveway-banner.bottom { bottom: 21.5%; }
-
-  @media (max-width: 480px) {
-    :root { --slot: 33px; }
-    .pg-label { font-size: 0.38rem; }
-    .building-name { font-size: 0.85rem; }
-    .zone-label { font-size: 0.5rem; }
+  @media (max-width: 500px) {
+    .header { padding: 24px 16px 14px; }
+    .map-wrap { padding: 0 12px; margin-top: 20px; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🅿️ Anupritha B — Parking Slots</h1>
-  <p>35 parking slots • Based on official parking plan</p>
-</header>
+<div class="header">
+  <h1>Anupritha B — Parking Plan</h1>
+  <p>35 parking slots &middot; Basement layout based on official architectural drawing</p>
+</div>
+<div class="header-divider"></div>
 
-<div class="map-container">
-  <div class="map">
-
-    <div class="driveway-banner top">▲ Elevation-3 — Drive Way</div>
-    <div class="driveway-banner bottom">▼ Drive Way</div>
-
-    <div class="zone-label label-back">◀ BACK SIDE ▶</div>
-    <div class="zone-label label-front">◀ FRONT SIDE ▶</div>
-    <div class="zone-label label-south">SOUTH SIDE</div>
-    <div class="zone-label label-north">NORTH SIDE</div>
-
-    <div class="building">
-      <div class="building-icon">🏢</div>
-      <div class="building-name">ANUPRITHA B</div>
-      <div class="building-sub">Residential Building</div>
-      <div class="building-floors">Lift · Goods Lift · Lobby · Staircase</div>
-    </div>
-
-    <div class="zone zone-back"   id="zone-back"></div>
-    <div class="zone zone-left"   id="zone-left"></div>
-    <div class="zone zone-right"  id="zone-right"></div>
-    <div class="zone zone-bottom" id="zone-bottom"></div>
-
-  </div>
+<div class="map-wrap">
+  <svg id="svg" viewBox="0 0 2200 3400" preserveAspectRatio="xMidYMid meet"
+       xmlns="http://www.w3.org/2000/svg">
+    <!-- JS-generated below -->
+  </svg>
 </div>
 
 <script>
-// Slot numbers per zone/group only — no names, no status, no data
-const layout = {
-  back:   [[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15]],
-  left:   [[34],[35],[16,17]],          // South side: 34, 35, 16, 17
-  right:  [[33],[30,31,32],[27,28,29]], // North side: 33, 30-32, 27-29
-  bottom: [
-    { nums:[18,19,20], label:'Pit' },
-    { nums:[21,22,23], label:'Puzzle' },
-    { nums:[24,25,26], label:'Pit' },
-  ],
-};
+// ============================================================
+// COORDINATE SYSTEM
+// 1 SVG unit = 1 cm  |  100 units = 1 metre
+// ViewBox: 2200 x 3400  =  22m wide x 34m deep
+//
+// Derived from blueprint dimension markers:
+//   Back width  = 5 bays x M-3 (300 units) = 1500 units
+//   South depth = 300 units (3m, one conventional bay)
+//   North depth = 300 units (3m, one conventional bay)
+//   Total width = 300 + 1500 + 300 + padding = 2200
+//   Back parking (h=500) + bund (h=100) + building (h=1920) +
+//   driveway (h=130) + front parking (h=500) + margins = 3400
+// ============================================================
 
-function slot(n) {
-  const el = document.createElement('div');
-  el.className = 'slot';
-  el.innerHTML = `<div class="slot-num">${n}</div>`;
-  return el;
+const NS = 'http://www.w3.org/2000/svg';
+
+function el(tag, attrs, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  return e;
 }
 
-function pg(nums, label, vertical) {
-  const wrap = document.createElement('div');
-  wrap.className = 'pg';
-  if (label) wrap.innerHTML = `<div class="pg-label">${label}</div>`;
-  const row = document.createElement('div');
-  row.className = 'pg-row';
-  if (vertical) row.style.flexDirection = 'column';
-  nums.forEach(n => row.appendChild(slot(n)));
-  wrap.appendChild(row);
-  return wrap;
-}
+const svg = document.getElementById('svg');
+function app(e) { svg.appendChild(e); return e; }
 
-// Back — 5 pit groups, slots stacked vertically
-const zBack = document.getElementById('zone-back');
-layout.back.forEach(nums => zBack.appendChild(pg(nums, 'Pit', true)));
+// ─── STYLES ───────────────────────────────────────────────
+app(el('style', {}, `
+  .bg        { fill: #ffffff; }
+  .site-bnd  { fill: none; stroke: #cbd5e1; stroke-width: 18; }
+  .dwy       { fill: #f8fafc; }
+  .dwy-txt   { font: 600 54px/1 Inter,system-ui; fill: #94a3b8; letter-spacing: 5px; }
+  .bund      { fill: url(#hatch); stroke: #e2e8f0; stroke-width: 6; }
+  .bldg-bg   { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 18; }
+  .bldg-name { font: 700 105px/1 Inter,system-ui; fill: #334155; letter-spacing: 1px; }
+  .bldg-sub  { font: 400 58px/1 Inter,system-ui; fill: #94a3b8; }
+  .blk-bg    { fill: #f1f5f9; stroke: #e2e8f0; stroke-width: 8; }
+  .blk-txt   { font: 500 46px/1 Inter,system-ui; fill: #94a3b8; }
+  .pg-pit    { fill: #eff6ff; stroke: #93c5fd; stroke-width: 10; stroke-dasharray: 26 13; }
+  .pg-conv   { fill: #f0fdf4; stroke: #86efac; stroke-width: 10; stroke-dasharray: 26 13; }
+  .pg-stack  { fill: #fffbeb; stroke: #fbbf24; stroke-width: 10; stroke-dasharray: 26 13; }
+  .pg-puzzle { fill: #f5f3ff; stroke: #a78bfa; stroke-width: 10; stroke-dasharray: 26 13; }
+  .slot-r    { fill: #ffffff; stroke: #94a3b8; stroke-width: 14; }
+  .slot-n    { font: 700 72px/1 Inter,system-ui; fill: #1e293b; }
+  .slot-n-sm { font: 700 56px/1 Inter,system-ui; fill: #1e293b; }
+  .zlbl      { font: 700 62px/1 Inter,system-ui; fill: #94a3b8; letter-spacing: 6px; }
+  .pg-type   { font: 600 44px/1 Inter,system-ui; fill: #94a3b8; letter-spacing: 1px; }
+`));
 
-// Helper — place a group at a specific % from top of its zone
-function pgAt(nums, label, topPct, vertical) {
-  const el = pg(nums, label, vertical);
-  el.style.top = topPct + '%';
-  return el;
-}
+// ─── HATCH PATTERN ────────────────────────────────────────
+const defs = el('defs', {});
+const pat  = el('pattern', { id:'hatch', width:22, height:22,
+                              patternUnits:'userSpaceOnUse', patternTransform:'rotate(45)' });
+pat.appendChild(el('line', { x1:0, y1:0, x2:0, y2:22, stroke:'#cbd5e1', 'stroke-width':5 }));
+defs.appendChild(pat);
+app(defs);
 
-// South side — 34,35 near top (upper third), then big toilet/staircase gap, 16-17 near bottom
-const zLeft = document.getElementById('zone-left');
-zLeft.appendChild(pgAt([34],    'Conv',  4,  false));
-zLeft.appendChild(pgAt([35],    'Conv',  22, false));
-zLeft.appendChild(pgAt([16,17], 'Stack', 70, false));
+// ─── BACKGROUND ───────────────────────────────────────────
+app(el('rect', { x:0, y:0, width:2200, height:3400, class:'bg' }));
 
-// North side — 33 just past bund wall (top), 30-32 after small gap, 27-29 past goods-lift gap
-const zRight = document.getElementById('zone-right');
-zRight.appendChild(pgAt([33],       'Conv', 3,  false));
-zRight.appendChild(pgAt([30,31,32], 'Pit',  26, false));
-zRight.appendChild(pgAt([27,28,29], 'Pit',  58, false));
+// ─── BACK DRIVEWAY ────────────────────────────────────────
+app(el('rect', { x:0, y:0, width:2200, height:194, class:'dwy' }));
+app(el('text', { x:1100, y:108, class:'dwy-txt', 'text-anchor':'middle',
+                 'dominant-baseline':'central' },
+       'ELEVATION-3  —  DRIVE WAY'));
 
-// Bottom — 5 groups as rows
-const zBottom = document.getElementById('zone-bottom');
-layout.bottom.forEach(g => zBottom.appendChild(pg(g.nums, g.label, false)));
+// ─── BUND WALL (between back parking & building) ──────────
+app(el('rect', { x:300, y:706, width:1600, height:90, class:'bund' }));
+
+// ─── BUILDING CORE ────────────────────────────────────────
+app(el('rect', { x:300, y:800, width:1600, height:1920, class:'bldg-bg' }));
+
+// Internal building blocks
+[
+  [320,  828, 370, 270, 'TOILET'],
+  [800,  828, 400, 270, 'STAIRCASE'],
+  [820, 1170, 200, 360, 'LIFT'],
+  [1400, 828, 200, 780, 'GOODS\nLIFT'],
+  [720, 1760, 560, 360, 'LOBBY'],
+  [700, 2240, 500, 180, 'DUCT ABOVE'],
+].forEach(([x,y,w,h,label]) => {
+  app(el('rect', { x, y, width:w, height:h, class:'blk-bg', rx:6 }));
+  const lines = label.split('\n');
+  lines.forEach((line, i) => {
+    const cy = y + h/2 + (i - (lines.length-1)/2) * 58;
+    app(el('text', { x:x+w/2, y:cy, class:'blk-txt',
+                     'text-anchor':'middle', 'dominant-baseline':'central' }, line));
+  });
+});
+
+// Building name
+app(el('text', { x:1100, y:1520, class:'bldg-name',
+                 'text-anchor':'middle', 'dominant-baseline':'central' },
+     'ANUPRITHA B'));
+app(el('text', { x:1100, y:1645, class:'bldg-sub',
+                 'text-anchor':'middle', 'dominant-baseline':'central' },
+     'Residential Building'));
+
+// ─── FRONT DRIVEWAY ───────────────────────────────────────
+app(el('rect', { x:0, y:2720, width:2200, height:128, class:'dwy' }));
+app(el('text', { x:1100, y:2787, class:'dwy-txt', 'text-anchor':'middle',
+                 'dominant-baseline':'central' },
+       'DRIVE WAY  —  FRONT ENTRY'));
+
+// Ramp indicator
+app(el('text', { x:2020, y:2860, class:'pg-type', 'text-anchor':'middle' }, 'RAMP UP'));
+
+// ─── SLOT DATA ────────────────────────────────────────────
+// [id, x, y, w, h, type]
+// Back: 1 SVG unit = 1cm. Pit bays: 100 wide x 500 deep. 3 slots per M-3 (300) bay.
+// Sides: 300 wide (3m depth into site) x 250 tall (2.5m along wall). Rotated orientation.
+// Front: 200 wide x 500 deep.
+const SLOTS = [
+  // BACK — 5 pit groups x 3 (slots 1-15)
+  // Bay 1: x 300-600
+  [1,  300,200, 100,500,'pit'],
+  [2,  400,200, 100,500,'pit'],
+  [3,  500,200, 100,500,'pit'],
+  // Bay 2: x 600-900
+  [4,  600,200, 100,500,'pit'],
+  [5,  700,200, 100,500,'pit'],
+  [6,  800,200, 100,500,'pit'],
+  // Bay 3: x 900-1200
+  [7,  900,200, 100,500,'pit'],
+  [8, 1000,200, 100,500,'pit'],
+  [9, 1100,200, 100,500,'pit'],
+  // Bay 4: x 1200-1500
+  [10,1200,200, 100,500,'pit'],
+  [11,1300,200, 100,500,'pit'],
+  [12,1400,200, 100,500,'pit'],
+  // Bay 5: x 1500-1800
+  [13,1500,200, 100,500,'pit'],
+  [14,1600,200, 100,500,'pit'],
+  [15,1700,200, 100,500,'pit'],
+
+  // SOUTH SIDE (left wall) — conventional upper, stack lower
+  // Slots touch left wall (x=0), depth = 300 into site
+  [34,  0, 860,300,250,'conv'],
+  [35,  0,1110,300,250,'conv'],
+  // gap ~1000 units (toilet block + staircase landing)
+  [16,  0,2110,300,250,'stack'],
+  [17,  0,2360,300,250,'stack'],
+
+  // NORTH SIDE (right wall) — conv + pit groups + pit groups
+  // Slots touch right wall at x=1900, depth = 300 into site
+  [33,1900, 860,300,250,'conv'],
+  // small gap after bund wall / retaining wall
+  [30,1900,1060,300,250,'pit'],
+  [31,1900,1310,300,250,'pit'],
+  [32,1900,1560,300,250,'pit'],
+  // gap: duct / goods lift zone
+  [27,1900,1920,300,250,'pit'],
+  [28,1900,2170,300,250,'pit'],
+  [29,1900,2420,300,250,'pit'],
+
+  // FRONT — pit + puzzle + pit
+  // y=2850 (below driveway), 200 wide x 500 deep
+  [18,  80,2850,200,500,'pit'],
+  [19, 280,2850,200,500,'pit'],
+  [20, 480,2850,200,500,'pit'],
+  [21, 680,2850,200,500,'puzzle'],
+  [22, 880,2850,200,500,'puzzle'],
+  [23,1080,2850,200,500,'puzzle'],
+  [24,1400,2850,200,500,'pit'],
+  [25,1600,2850,200,500,'pit'],
+  [26,1800,2850,200,500,'pit'],
+];
+
+// ─── GROUP BORDERS ────────────────────────────────────────
+// [x, y, w, h, type, label]
+const GROUPS = [
+  // Back — 5 pit groups
+  [294,194,312,512,'pit','Pit'],
+  [594,194,312,512,'pit','Pit'],
+  [894,194,312,512,'pit','Pit'],
+  [1194,194,312,512,'pit','Pit'],
+  [1494,194,312,512,'pit','Pit'],
+  // South upper (34,35)
+  [0,854,306,512,'conv','Conv'],
+  // South lower (16,17)
+  [0,2104,306,512,'stack','Stack'],
+  // North: 33 single
+  [1894,854,306,262,'conv','Conv'],
+  // North: 30-32
+  [1894,1054,306,762,'pit','Pit'],
+  // North: 27-29
+  [1894,1914,306,762,'pit','Pit'],
+  // Front A (18-20)
+  [74,2844,612,512,'pit','Pit'],
+  // Front B (21-23)
+  [674,2844,412,512,'puzzle','Puzzle'],
+  // Front C (24-26)
+  [1394,2844,612,512,'pit','Pit'],
+];
+
+// Draw groups (behind slots)
+GROUPS.forEach(([x,y,w,h,type,label]) => {
+  app(el('rect', { x, y, width:w, height:h, class:`pg-${type}`, rx:10 }));
+  // Type label — placed just below the group top edge
+  app(el('text', { x: x+w/2, y: y+50, class:'pg-type',
+                   'text-anchor':'middle', 'dominant-baseline':'central' }, label));
+});
+
+// ─── DRAW SLOTS ───────────────────────────────────────────
+SLOTS.forEach(([id,x,y,w,h,type]) => {
+  app(el('rect', { x, y, width:w, height:h, class:'slot-r', rx:6 }));
+  // Use smaller font for narrow pit slots (w=100)
+  const cls = w < 150 ? 'slot-n-sm' : 'slot-n';
+  app(el('text', { x: x+w/2, y: y+h/2, class:cls,
+                   'text-anchor':'middle', 'dominant-baseline':'central' }, id));
+});
+
+// ─── SITE BOUNDARY (drawn last, on top) ───────────────────
+app(el('rect', { x:0, y:0, width:2200, height:3400, class:'site-bnd' }));
+
+// ─── ZONE DIRECTION LABELS ────────────────────────────────
+// BACK SIDE — top
+app(el('text', { x:1100, y:148, class:'zlbl',
+                 'text-anchor':'middle', 'dominant-baseline':'central' },
+     'BACK SIDE'));
+
+// FRONT SIDE — bottom
+app(el('text', { x:1100, y:3360, class:'zlbl',
+                 'text-anchor':'middle', 'dominant-baseline':'central' },
+     'FRONT SIDE'));
+
+// SOUTH SIDE — left (rotated)
+app(el('text', { x:100, y:1700, class:'zlbl',
+                 'text-anchor':'middle', 'dominant-baseline':'central',
+                 transform:'rotate(-90,100,1700)' },
+     'SOUTH SIDE'));
+
+// NORTH SIDE — right (rotated)
+app(el('text', { x:2100, y:1700, class:'zlbl',
+                 'text-anchor':'middle', 'dominant-baseline':'central',
+                 transform:'rotate(90,2100,1700)' },
+     'NORTH SIDE'));
 </script>
 </body>
 </html>
