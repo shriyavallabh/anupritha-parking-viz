@@ -9,142 +9,157 @@
     --bg: #0a0a1a; --card: #141428; --border: #2a2a4a;
     --text: #e8e8f0; --muted: #7a7a9a;
     --green: #10b981; --blue: #3b82f6; --red: #ef4444; --yellow: #f59e0b; --purple: #8b5cf6;
+    --orange: #f97316;
     --green-bg: rgba(16,185,129,0.15); --blue-bg: rgba(59,130,246,0.15);
     --red-bg: rgba(239,68,68,0.15); --yellow-bg: rgba(245,158,11,0.15);
-    --slot-size: 44px;
+    --slot: 42px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* Header */
-  header { text-align: center; padding: 20px 16px 8px; }
-  header h1 { font-size: 1.4rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  header p { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+  header { text-align: center; padding: 16px 16px 6px; }
+  header h1 { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: var(--muted); font-size: 0.75rem; margin-top: 3px; }
 
-  /* Search */
-  .search-bar { max-width: 400px; margin: 12px auto; padding: 0 16px; }
-  .search-bar input { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; outline: none; }
+  .search-bar { max-width: 400px; margin: 10px auto; padding: 0 16px; }
+  .search-bar input { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 9px 14px; border-radius: 10px; font-size: 0.85rem; outline: none; }
   .search-bar input:focus { border-color: var(--blue); }
   .search-bar input::placeholder { color: var(--muted); }
 
-  /* Stats */
-  .stats { display: flex; gap: 8px; justify-content: center; padding: 8px 16px; flex-wrap: wrap; }
-  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 16px; text-align: center; }
-  .stat .num { font-size: 1.3rem; font-weight: 700; }
-  .stat .label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stats { display: flex; gap: 8px; justify-content: center; padding: 6px 16px; flex-wrap: wrap; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 6px 14px; text-align: center; }
+  .stat .num { font-size: 1.2rem; font-weight: 700; }
+  .stat .label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-  /* Legend */
-  .legend { display: flex; gap: 14px; justify-content: center; padding: 10px 16px; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--muted); }
-  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .legend { display: flex; gap: 10px; justify-content: center; padding: 8px 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--muted); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 2px; }
 
-  /* Map Container */
-  .map-container { max-width: 760px; margin: 10px auto; padding: 0 12px; }
-  .map { position: relative; width: 100%; aspect-ratio: 1 / 1.2; }
+  /* ── MAP ── */
+  .map-container { max-width: 720px; margin: 8px auto; padding: 0 10px; }
+  .map { position: relative; width: 100%; aspect-ratio: 1 / 1.55; }
 
-  /* Building */
-  .building { position: absolute; top: 26%; left: 20%; width: 54%; height: 46%; background: linear-gradient(135deg, #1e1e3a, #252550); border: 2px solid #4a4a7a; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 2; }
-  .building-name { font-size: 1.1rem; font-weight: 700; color: #6a6aaa; }
-  .building-sub { font-size: 0.65rem; color: #4a4a6a; margin-top: 2px; }
-  .building-icon { font-size: 2rem; margin-bottom: 4px; }
-
-  /* Side Labels */
-  .side-label { position: absolute; font-size: 0.65rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; z-index: 1; }
-  .side-label.top { top: 21%; left: 50%; transform: translateX(-50%); }
-  .side-label.bottom { bottom: 3%; left: 50%; transform: translateX(-50%); }
-  .side-label.left { top: 50%; left: 2%; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; }
-  .side-label.right { top: 50%; right: 0%; transform: rotate(90deg) translateX(50%); transform-origin: right center; }
-
-  /* Parking Zones */
-  .zone { position: absolute; z-index: 3; }
-
-  /* Individual Slot — EQUAL SIZE for all */
+  /* ── SLOTS (all equal square size) ── */
   .slot {
-    width: var(--slot-size);
-    height: var(--slot-size);
+    width: var(--slot); height: var(--slot);
     flex: none;
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 5px;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
   }
-  .slot:hover { transform: scale(1.12); z-index: 10; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-  .slot.open { border-color: var(--green); background: var(--green-bg); }
-  .slot.assigned { border-color: var(--blue); background: var(--blue-bg); }
-  .slot.conflict { border-color: var(--red); background: var(--red-bg); }
-  .slot.highlight { border-color: var(--yellow); background: var(--yellow-bg); box-shadow: 0 0 12px rgba(245,158,11,0.4); transform: scale(1.12); z-index: 10; }
-  .slot .slot-num { font-size: 0.78rem; font-weight: 700; }
-  .slot.open .slot-num { color: var(--green); }
+  .slot:hover { transform: scale(1.15); z-index: 20; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+  .slot.open     { border-color: var(--green);  background: var(--green-bg); }
+  .slot.assigned { border-color: var(--blue);   background: var(--blue-bg); }
+  .slot.conflict { border-color: var(--red);    background: var(--red-bg); }
+  .slot.highlight { border-color: var(--yellow); background: var(--yellow-bg); box-shadow: 0 0 12px rgba(245,158,11,0.5); transform: scale(1.15); z-index: 20; }
+  .slot .slot-num { font-size: 0.75rem; font-weight: 700; line-height: 1; }
+  .slot.open     .slot-num { color: var(--green); }
   .slot.assigned .slot-num { color: var(--blue); }
   .slot.conflict .slot-num { color: var(--red); }
 
-  /* Stack Parking Group */
-  .stack-group { display: flex; gap: 3px; background: rgba(139,92,246,0.1); border: 1px dashed var(--purple); border-radius: 6px; padding: 4px; }
-  .stack-label { font-size: 0.5rem; color: var(--purple); text-align: center; font-weight: 600; white-space: nowrap; }
+  /* ── PARKING GROUP CONTAINER ── */
+  .pg {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 3px 4px;
+    border-radius: 6px;
+  }
+  .pg.pit    { background: rgba(59,130,246,0.08);  border: 1px dashed rgba(59,130,246,0.4); }
+  .pg.stack  { background: rgba(245,158,11,0.08);  border: 1px dashed rgba(245,158,11,0.5); }
+  .pg.puzzle { background: rgba(139,92,246,0.1);   border: 1px dashed var(--purple); }
+  .pg.conv   { background: rgba(16,185,129,0.08);  border: 1px dashed rgba(16,185,129,0.4); }
+  .pg-label {
+    font-size: 0.42rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .pg.pit    .pg-label { color: var(--blue); }
+  .pg.stack  .pg-label { color: var(--yellow); }
+  .pg.puzzle .pg-label { color: var(--purple); }
+  .pg.conv   .pg-label { color: var(--green); }
+  .pg-row { display: flex; flex-direction: row; gap: 3px; }
 
-  /* Tooltip */
-  .tooltip { display: none; position: fixed; background: #1a1a3a; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; z-index: 100; min-width: 200px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
-  .tooltip.show { display: block; }
-  .tooltip h3 { font-size: 0.9rem; margin-bottom: 6px; }
-  .tooltip .detail { font-size: 0.78rem; color: var(--muted); margin-bottom: 3px; }
-  .tooltip .detail span { color: var(--text); font-weight: 500; }
+  /* ── ZONE ABSOLUTE POSITIONS ── */
+  .zone { position: absolute; z-index: 3; }
 
-  /* BACK ZONE — 5 stack groups across the back, each group is a vertical column of 3 */
+  /* BACK SIDE — top, 5 pit groups */
   .zone-back {
-    top: 0%; left: 8%; width: 82%; height: 24%;
-    display: flex; gap: 2%; padding: 1.5% 1%;
+    top: 1%; left: 5%; width: 89%; height: 18%;
+    display: flex; gap: 1.5%; padding: 1% 0.5%;
+    align-items: flex-end; justify-content: center;
+  }
+  .zone-back .pg { flex: 1; }
+  .zone-back .pg-row { flex-direction: column; align-items: center; gap: 3px; }
+
+  /* LEFT SIDE — 34, 35 (conventional) */
+  .zone-left {
+    top: 34%; left: 0%; width: 13%;
+    display: flex; flex-direction: column; gap: 6px; padding: 4px 2px;
+    align-items: center;
+  }
+
+  /* RIGHT SIDE — 33 (single conv) + 30,31,32 (pit group) */
+  .zone-right {
+    top: 27%; right: 0%; width: 24%;
+    display: flex; flex-direction: column; gap: 6px; padding: 4px;
+    align-items: center;
+  }
+
+  /* BOTTOM ROW — 5 groups: [16,17 stack] [18-20 pit] [21-23 puzzle] [24-26 pit] [27-29 pit] */
+  .zone-bottom {
+    bottom: 1%; left: 1%; width: 98%; height: 20%;
+    display: flex; gap: 1%; padding: 1% 0.5%;
     align-items: flex-start; justify-content: center;
   }
-  .zone-back .stack-group {
-    flex-direction: column;
-    align-items: center;
-  }
 
-  /* FRONT ZONE — 8 slots across the front */
-  .zone-front {
-    bottom: 0%; left: 8%; width: 82%; height: 13%;
-    display: flex; gap: 6px; padding: 6px 4px;
-    align-items: center; justify-content: center;
+  /* ── BUILDING ── */
+  .building {
+    position: absolute; top: 21%; left: 15%; width: 59%; height: 52%;
+    background: linear-gradient(135deg, #1e1e3a, #252550);
+    border: 2px solid #4a4a7a; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    z-index: 2;
   }
+  .building-icon  { font-size: 1.8rem; margin-bottom: 4px; }
+  .building-name  { font-size: 1rem; font-weight: 700; color: #6a6aaa; }
+  .building-sub   { font-size: 0.6rem; color: #4a4a6a; margin-top: 2px; }
+  .building-floors { font-size: 0.55rem; color: #3a3a5a; margin-top: 6px; letter-spacing: 0.5px; }
 
-  /* LEFT ZONE — 2 slots stacked */
-  .zone-left {
-    top: 32%; left: 0%; width: 16%;
-    display: flex; flex-direction: column; gap: 6px; padding: 4px;
-    align-items: center; justify-content: center;
+  /* ── SIDE / DRIVEWAY LABELS ── */
+  .side-label {
+    position: absolute; font-size: 0.6rem; font-weight: 600;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; z-index: 1;
   }
+  .side-label.top    { top: 19.5%; left: 50%; transform: translateX(-50%); }
+  .side-label.bottom { bottom: 22%; left: 50%; transform: translateX(-50%); }
+  .side-label.left   { top: 49%; left: 1.5%; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; }
+  .side-label.right  { top: 49%; right: 0.5%; transform: rotate(90deg) translateX(50%); transform-origin: right center; }
 
-  /* RIGHT ZONE — 4 stack groups stacked vertically, each group is a row of 3 */
-  .zone-right {
-    top: 18%; right: 0%; width: 26%;
-    display: flex; flex-direction: column; gap: 5px; padding: 4px;
-    align-items: center;
+  /* Driveway label banners */
+  .driveway-banner {
+    position: absolute; z-index: 1; left: 5%; width: 90%;
+    text-align: center; font-size: 0.55rem; letter-spacing: 2px;
+    text-transform: uppercase; color: #3a3a5a; padding: 2px 0;
+    border-top: 1px dashed rgba(255,255,255,0.07);
+    border-bottom: 1px dashed rgba(255,255,255,0.07);
   }
-  .zone-right .stack-group {
-    flex-direction: row;
-    align-items: center;
-  }
-  .zone-right .stack-group.single-slot {
-    background: none;
-    border: none;
-    padding: 0;
-  }
+  .driveway-banner.top    { top: 20%; }
+  .driveway-banner.bottom { bottom: 21.5%; }
 
-  /* Driveway indicators */
-  .driveway { position: absolute; z-index: 1; }
-  .driveway-front { bottom: 14%; left: 5%; width: 90%; height: 2.5%; background: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px); border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: 1px dashed rgba(255,255,255,0.1); }
-  .driveway-back { top: 25%; left: 5%; width: 90%; height: 2.5%; background: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px); border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: 1px dashed rgba(255,255,255,0.1); }
+  /* ── TOOLTIP ── */
+  .tooltip {
+    display: none; position: fixed;
+    background: #1a1a3a; border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px; z-index: 100;
+    min-width: 210px; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  .tooltip.show { display: block; }
+  .tooltip h3   { font-size: 0.9rem; margin-bottom: 8px; }
+  .tooltip .detail { font-size: 0.76rem; color: var(--muted); margin-bottom: 3px; }
+  .tooltip .detail span { color: var(--text); font-weight: 500; }
 
-  @media (max-width: 500px) {
-    :root { --slot-size: 36px; }
-    .map-container { padding: 0 4px; }
-    .building-name { font-size: 0.9rem; }
+  @media (max-width: 480px) {
+    :root { --slot: 33px; }
+    .pg-label { font-size: 0.38rem; }
+    .building-name { font-size: 0.8rem; }
   }
 </style>
 </head>
@@ -152,7 +167,7 @@
 
 <header>
   <h1>🅿️ Anupritha B — Parking Visualizer</h1>
-  <p>Interactive Parking Slot Map • Click any slot for details</p>
+  <p>Tap any slot for full details • Based on official parking plan</p>
 </header>
 
 <div class="search-bar">
@@ -161,48 +176,52 @@
 
 <div class="stats">
   <div class="stat"><div class="num" style="color:var(--text)">35</div><div class="label">Total</div></div>
-  <div class="stat"><div class="num" style="color:var(--green)" id="cOpen">0</div><div class="label">Open</div></div>
-  <div class="stat"><div class="num" style="color:var(--blue)" id="cAssigned">0</div><div class="label">Assigned</div></div>
-  <div class="stat"><div class="num" style="color:var(--red)" id="cConflict">0</div><div class="label">Conflict</div></div>
+  <div class="stat"><div class="num" style="color:var(--green)"  id="cOpen">0</div><div class="label">Open</div></div>
+  <div class="stat"><div class="num" style="color:var(--blue)"   id="cAssigned">0</div><div class="label">Assigned</div></div>
+  <div class="stat"><div class="num" style="color:var(--red)"    id="cConflict">0</div><div class="label">Conflict</div></div>
 </div>
 
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Open</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Assigned</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Conflict</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Stack/Group</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blue);opacity:0.5"></div>Pit</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--yellow);opacity:0.7"></div>Stack</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Puzzle</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green);opacity:0.5"></div>Conv.</div>
 </div>
 
 <div class="map-container">
   <div class="map">
-    <!-- Side Labels -->
-    <div class="side-label top">▲ Back Side — Stack Parking (5 Stacks × 3)</div>
-    <div class="side-label bottom">▼ Front Side — 8 Slots</div>
+
+    <!-- Driveway labels -->
+    <div class="driveway-banner top">▲ Elevation-3 — Drive Way (Back Entry)</div>
+    <div class="driveway-banner bottom">▼ Drive Way (Front Entry)</div>
+
+    <!-- Side labels -->
     <div class="side-label left">Side</div>
     <div class="side-label right">Side</div>
 
-    <!-- Driveways -->
-    <div class="driveway driveway-front"></div>
-    <div class="driveway driveway-back"></div>
-
-    <!-- Building -->
+    <!-- Building core -->
     <div class="building">
       <div class="building-icon">🏢</div>
       <div class="building-name">ANUPRITHA B</div>
       <div class="building-sub">Residential Building</div>
+      <div class="building-floors">Lift · Goods Lift · Lobby · Staircase</div>
     </div>
 
-    <!-- BACK SIDE: 5 Stack Parking Groups (15 slots) -->
+    <!-- BACK ZONE: 5 pit-independent groups (1–15), right to left as per plan: 1-3 → 4-6 → 7-9 → 10-12 → 13-15 -->
     <div class="zone zone-back" id="zone-back"></div>
 
-    <!-- FRONT SIDE: 8 Slots -->
-    <div class="zone zone-front" id="zone-front"></div>
-
-    <!-- LEFT SIDE: 2 slots -->
+    <!-- LEFT ZONE: 34, 35 conventional -->
     <div class="zone zone-left" id="zone-left"></div>
 
-    <!-- RIGHT SIDE: 4 groups (24-26 / 27-29 / 30-32 / 33) -->
+    <!-- RIGHT ZONE: 33 conventional (top) + 30,31,32 pit (below) -->
     <div class="zone zone-right" id="zone-right"></div>
+
+    <!-- BOTTOM ZONE: 5 groups — [16,17 stack][18-20 pit][21-23 puzzle][24-26 pit][27-29 pit] -->
+    <div class="zone zone-bottom" id="zone-bottom"></div>
+
   </div>
 </div>
 
@@ -212,135 +231,185 @@
   <div class="detail">Status: <span id="tt-status"></span></div>
   <div class="detail">Sales (List A): <span id="tt-sales"></span></div>
   <div class="detail">Redev (List B): <span id="tt-redev"></span></div>
-  <div class="detail">Parking Type: <span id="tt-type"></span></div>
-  <div class="detail">Location: <span id="tt-location"></span></div>
+  <div class="detail">Type: <span id="tt-type"></span></div>
+  <div class="detail">Location: <span id="tt-loc"></span></div>
 </div>
 
 <script>
-// === PARKING DATA ===
+// ── DATA ──
 const slots = [
-  // BACK SIDE — Stack 1 (slots 1,2,3)
-  {slot:1,  sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:1},
-  {slot:2,  sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:1},
-  {slot:3,  sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:1},
-  // Stack 2 (slots 4,5,6)
-  {slot:4,  sales:"Mr. Raunak Sambre", salesFlat:"403", redev:"",              redevFlat:"",  status:"assigned", type:"Pit Parking Independent", zone:"back",  stack:2},
-  {slot:5,  sales:"Amit & Manju Mali", salesFlat:"703", redev:"",              redevFlat:"",  status:"assigned", type:"Pit Parking Independent", zone:"back",  stack:2},
-  {slot:6,  sales:"",                  salesFlat:"",  redev:"Ponkshe",         redevFlat:"201", status:"assigned", type:"Pit Parking Independent", zone:"back", stack:2},
-  // Stack 3 (slots 7,8,9)
-  {slot:7,  sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:3},
-  {slot:8,  sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:3},
-  {slot:9,  sales:"",                  salesFlat:"",  redev:"Tidake",          redevFlat:"301", status:"assigned", type:"Pit Parking Independent", zone:"back", stack:3},
-  // Stack 4 (slots 10,11,12)
-  {slot:10, sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:4},
-  {slot:11, sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:4},
-  {slot:12, sales:"",                  salesFlat:"",  redev:"Mahimkar",        redevFlat:"802", status:"assigned", type:"Pit Parking Independent", zone:"back", stack:4},
-  // Stack 5 (slots 13,14,15)
-  {slot:13, sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"back",  stack:5},
-  {slot:14, sales:"Nanda Tonapi",      salesFlat:"202", redev:"",              redevFlat:"",  status:"assigned", type:"Pit Parking Independent", zone:"back",  stack:5},
-  {slot:15, sales:"Sneha Kelkar",      salesFlat:"303", redev:"",              redevFlat:"",  status:"assigned", type:"Pit Parking Independent", zone:"back",  stack:5},
+  // BACK — right to left as in plan: Stack1=1-3, Stack2=4-6, Stack3=7-9, Stack4=10-12, Stack5=13-15
+  {slot:1,  sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:1},
+  {slot:2,  sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:1},
+  {slot:3,  sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:1},
+  {slot:4,  sales:"Mr. Raunak Sambre",     salesFlat:"403", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"back",   stack:2},
+  {slot:5,  sales:"Amit & Manju Mali",     salesFlat:"703", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"back",   stack:2},
+  {slot:6,  sales:"",                      salesFlat:"",    redev:"Ponkshe",           redevFlat:"201", status:"assigned", type:"Pit Parking Independent",    zone:"back",   stack:2},
+  {slot:7,  sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:3},
+  {slot:8,  sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:3},
+  {slot:9,  sales:"",                      salesFlat:"",    redev:"Tidake",            redevFlat:"301", status:"assigned", type:"Pit Parking Independent",    zone:"back",   stack:3},
+  {slot:10, sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:4},
+  {slot:11, sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:4},
+  {slot:12, sales:"",                      salesFlat:"",    redev:"Mahimkar",          redevFlat:"802", status:"assigned", type:"Pit Parking Independent",    zone:"back",   stack:4},
+  {slot:13, sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"back",   stack:5},
+  {slot:14, sales:"Nanda Tonapi",          salesFlat:"202", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"back",   stack:5},
+  {slot:15, sales:"Sneha Kelkar",          salesFlat:"303", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"back",   stack:5},
 
-  // FRONT SIDE — 8 slots (16–23)
-  {slot:16, sales:"",                  salesFlat:"",  redev:"Bhosale",         redevFlat:"502", status:"assigned", type:"Stack Parking",           zone:"front"},
-  {slot:17, sales:"",                  salesFlat:"",  redev:"Bhosale",         redevFlat:"502", status:"assigned", type:"Stack Parking",           zone:"front"},
-  {slot:18, sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"front"},
-  {slot:19, sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Pit Parking Independent", zone:"front"},
-  {slot:20, sales:"",                  salesFlat:"",  redev:"Gujar",           redevFlat:"601", status:"assigned", type:"Pit Parking Independent", zone:"front"},
-  {slot:21, sales:"Rahul Deshpande",   salesFlat:"903", redev:"Onkar Marathe", redevFlat:"701", status:"conflict", type:"Pit Parking Independent", zone:"front"},
-  {slot:22, sales:"Saurabh Damle",     salesFlat:"203", redev:"Dhananjay Marathe", redevFlat:"702", status:"conflict", type:"Pit Parking Independent", zone:"front"},
-  {slot:23, sales:"Deependra Karulakar", salesFlat:"103", redev:"Wagal",       redevFlat:"501", status:"conflict", type:"Pit Parking Independent", zone:"front"},
+  // BOTTOM ROW (left to right as per plan)
+  {slot:16, sales:"",                      salesFlat:"",    redev:"Bhosale",           redevFlat:"502", status:"assigned", type:"Stack Car Parking Dependent", zone:"bottom", group:1},
+  {slot:17, sales:"",                      salesFlat:"",    redev:"Bhosale",           redevFlat:"502", status:"assigned", type:"Stack Car Parking Dependent", zone:"bottom", group:1},
+  {slot:18, sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"bottom", group:2},
+  {slot:19, sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"bottom", group:2},
+  {slot:20, sales:"",                      salesFlat:"",    redev:"Gujar",             redevFlat:"601", status:"assigned", type:"Pit Parking Independent",    zone:"bottom", group:2},
+  {slot:21, sales:"Rahul Deshpande",       salesFlat:"903", redev:"Onkar Marathe",     redevFlat:"701", status:"conflict", type:"Puzzle Parking Independent", zone:"bottom", group:3},
+  {slot:22, sales:"Saurabh Damle",         salesFlat:"203", redev:"Dhananjay Marathe", redevFlat:"702", status:"conflict", type:"Puzzle Parking Independent", zone:"bottom", group:3},
+  {slot:23, sales:"Deependra Karulakar",   salesFlat:"103", redev:"Wagal",             redevFlat:"501", status:"conflict", type:"Puzzle Parking Independent", zone:"bottom", group:3},
+  {slot:24, sales:"Nilesh Ratnaparkhi",    salesFlat:"803", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"bottom", group:4},
+  {slot:25, sales:"Mohit & Geetali Sant",  salesFlat:"801", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"bottom", group:4},
+  {slot:26, sales:"Mohit & Geetali Sant",  salesFlat:"801", redev:"Awachat",           redevFlat:"302", status:"conflict", type:"Pit Parking Independent",    zone:"bottom", group:4},
+  {slot:27, sales:"",                      salesFlat:"",    redev:"",                  redevFlat:"",    status:"open",     type:"Pit Parking Independent",    zone:"bottom", group:5},
+  {slot:28, sales:"",                      salesFlat:"",    redev:"Bhagurkar",         redevFlat:"603", status:"assigned", type:"Pit Parking Independent",    zone:"bottom", group:5},
+  {slot:29, sales:"",                      salesFlat:"",    redev:"Pathak",            redevFlat:"401", status:"assigned", type:"Pit Parking Independent",    zone:"bottom", group:5},
 
-  // LEFT SIDE — 2 slots (34, 35)
-  {slot:34, sales:"Shruti Pethkar",    salesFlat:"",  redev:"Marukumar",       redevFlat:"101", status:"conflict", type:"Conventional",           zone:"left"},
-  {slot:35, sales:"Shruti Pethkar",    salesFlat:"901", redev:"Bhagurkar",     redevFlat:"503", status:"conflict", type:"Conventional",           zone:"left"},
+  // RIGHT SIDE (top to bottom): 33 conventional single, then 30-32 pit group
+  {slot:30, sales:"Gandhali Atre",         salesFlat:"902", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"right"},
+  {slot:31, sales:"Anjali & Sudhir Naik",  salesFlat:"102", redev:"",                  redevFlat:"",    status:"assigned", type:"Pit Parking Independent",    zone:"right"},
+  {slot:32, sales:"Anjali & Sudhir Naik",  salesFlat:"102", redev:"Patil",             redevFlat:"602", status:"conflict", type:"Pit Parking Independent",    zone:"right"},
+  {slot:33, sales:"Atul Apte",             salesFlat:"402", redev:"",                  redevFlat:"",    status:"assigned", type:"Conventional Car Parking",   zone:"right"},
 
-  // RIGHT SIDE — Group A (24,25,26), Group B (27,28,29), Group C (30,31,32), Single (33)
-  {slot:24, sales:"Nilesh Ratnaparkhi", salesFlat:"803", redev:"",             redevFlat:"",  status:"assigned", type:"Pit Parking Independent", zone:"right", stack:1},
-  {slot:25, sales:"Mohit & Geetali Sant", salesFlat:"801", redev:"",           redevFlat:"",  status:"assigned", type:"Pit Parking Independent", zone:"right", stack:1},
-  {slot:26, sales:"Mohit & Geetali Sant", salesFlat:"801", redev:"Awachat",    redevFlat:"302", status:"conflict", type:"Pit Parking Independent", zone:"right", stack:1},
-  {slot:27, sales:"",                  salesFlat:"",  redev:"",                redevFlat:"",  status:"open",     type:"Conventional",            zone:"right", stack:2},
-  {slot:28, sales:"",                  salesFlat:"",  redev:"Bhagurkar",       redevFlat:"603", status:"assigned", type:"Pit Parking Independent", zone:"right", stack:2},
-  {slot:29, sales:"",                  salesFlat:"",  redev:"Pathak",          redevFlat:"401", status:"assigned", type:"Pit Parking Independent", zone:"right", stack:2},
-  {slot:30, sales:"Gandhali Atre",     salesFlat:"902", redev:"",              redevFlat:"",  status:"assigned", type:"Conventional",            zone:"right", stack:3},
-  {slot:31, sales:"Anjali & Sudhir Naik", salesFlat:"102", redev:"",           redevFlat:"",  status:"assigned", type:"Conventional",            zone:"right", stack:3},
-  {slot:32, sales:"Anjali & Sudhir Naik", salesFlat:"102", redev:"Patil",      redevFlat:"602", status:"conflict", type:"Pit Parking Independent", zone:"right", stack:3},
-  {slot:33, sales:"Atul Apte",         salesFlat:"402", redev:"",              redevFlat:"",  status:"assigned", type:"Conventional",            zone:"right", stack:4},
+  // LEFT SIDE: 34, 35 conventional single
+  {slot:34, sales:"Shruti Pethkar",        salesFlat:"",    redev:"Marukumar",         redevFlat:"101", status:"conflict", type:"Conventional Single Parking", zone:"left"},
+  {slot:35, sales:"Shruti Pethkar",        salesFlat:"901", redev:"Bhagurkar",         redevFlat:"503", status:"conflict", type:"Conventional Single Parking", zone:"left"},
 ];
 
-// === RENDER ===
+// ── HELPERS ──
+function pgTypeClass(type) {
+  if (type.toLowerCase().includes('puzzle')) return 'puzzle';
+  if (type.toLowerCase().includes('stack'))  return 'stack';
+  if (type.toLowerCase().includes('conv'))   return 'conv';
+  return 'pit';
+}
+function pgShortLabel(type) {
+  if (type.toLowerCase().includes('puzzle')) return '🧩 Puzzle';
+  if (type.toLowerCase().includes('stack'))  return '🔄 Stack';
+  if (type.toLowerCase().includes('conv'))   return '🅿 Conv';
+  return '⬇ Pit';
+}
+
+// ── SLOT ELEMENT ──
 function createSlotEl(d) {
   const el = document.createElement('div');
   el.className = `slot ${d.status}`;
   el.dataset.slot = d.slot;
   el.innerHTML = `<div class="slot-num">${d.slot}</div>`;
-  el.addEventListener('click', e => showTooltip(e, d));
+  el.addEventListener('click',      e => showTooltip(e, d));
   el.addEventListener('mouseenter', e => showTooltip(e, d));
-  el.addEventListener('mouseleave', () => hideTooltip());
+  el.addEventListener('mouseleave', ()  => hideTooltip());
   return el;
 }
 
-function renderBack() {
-  const zone = document.getElementById('zone-back');
-  for (let s = 1; s <= 5; s++) {
-    const group = document.createElement('div');
-    group.className = 'stack-group';
-    group.innerHTML = `<div class="stack-label">Stack ${s}</div>`;
-    slots.filter(d => d.zone === 'back' && d.stack === s).forEach(d => group.appendChild(createSlotEl(d)));
-    zone.appendChild(group);
-  }
+// ── PARKING GROUP ELEMENT ──
+function makePG(slotNums, typeOverride) {
+  const sample = slots.find(s => s.slot === slotNums[0]);
+  const type   = typeOverride || sample.type;
+  const cls    = pgTypeClass(type);
+  const wrap   = document.createElement('div');
+  wrap.className = `pg ${cls}`;
+  wrap.innerHTML = `<div class="pg-label">${pgShortLabel(type)}</div>`;
+  const row = document.createElement('div');
+  row.className = 'pg-row';
+  slotNums.forEach(n => {
+    const d = slots.find(s => s.slot === n);
+    if (d) row.appendChild(createSlotEl(d));
+  });
+  wrap.appendChild(row);
+  return wrap;
 }
 
-function renderRight() {
-  const zone = document.getElementById('zone-right');
-  // Groups: A=stack1 (24-26), B=stack2 (27-29), C=stack3 (30-32), Single=stack4 (33)
-  const groups = [
-    { label: 'A', stackId: 1 },
-    { label: 'B', stackId: 2 },
-    { label: 'C', stackId: 3 },
-    { label: '',  stackId: 4 },
-  ];
-  groups.forEach(g => {
-    const group = document.createElement('div');
-    const isSingle = g.stackId === 4;
-    group.className = isSingle ? 'stack-group single-slot' : 'stack-group';
-    if (g.label) group.innerHTML = `<div class="stack-label">Grp ${g.label}</div>`;
-    slots.filter(d => d.zone === 'right' && d.stack === g.stackId).forEach(d => group.appendChild(createSlotEl(d)));
-    zone.appendChild(group);
+// ── RENDER BACK ── (5 pit groups, stacked vertically within each group)
+function renderBack() {
+  const zone = document.getElementById('zone-back');
+  [[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15]].forEach(nums => {
+    const wrap = document.createElement('div');
+    wrap.className = 'pg pit';
+    wrap.innerHTML = `<div class="pg-label">⬇ Pit</div>`;
+    const col = document.createElement('div');
+    col.className = 'pg-row';
+    col.style.flexDirection = 'column';
+    col.style.gap = '3px';
+    nums.forEach(n => {
+      const d = slots.find(s => s.slot === n);
+      if (d) col.appendChild(createSlotEl(d));
+    });
+    wrap.appendChild(col);
+    zone.appendChild(wrap);
   });
 }
 
-function renderZone(zoneId) {
-  const zone = document.getElementById(`zone-${zoneId}`);
-  slots.filter(d => d.zone === zoneId).forEach(d => zone.appendChild(createSlotEl(d)));
+// ── RENDER RIGHT ── (33 single conv at top, 30-32 pit below)
+function renderRight() {
+  const zone = document.getElementById('zone-right');
+  // 33 — conventional single
+  zone.appendChild(makePG([33]));
+  // 30,31,32 — pit group (horizontal row)
+  zone.appendChild(makePG([30,31,32]));
+}
+
+// ── RENDER LEFT ── (34, 35 conventional single)
+function renderLeft() {
+  const zone = document.getElementById('zone-left');
+  [34, 35].forEach(n => {
+    const d = slots.find(s => s.slot === n);
+    const wrap = document.createElement('div');
+    wrap.className = 'pg conv';
+    wrap.innerHTML = `<div class="pg-label">🅿 Conv</div>`;
+    const row = document.createElement('div');
+    row.className = 'pg-row';
+    row.appendChild(createSlotEl(d));
+    wrap.appendChild(row);
+    zone.appendChild(wrap);
+  });
+}
+
+// ── RENDER BOTTOM ── (5 groups left to right)
+function renderBottom() {
+  const zone = document.getElementById('zone-bottom');
+  const groups = [
+    { nums: [16,17],    type: 'Stack Car Parking Dependent' },
+    { nums: [18,19,20], type: 'Pit Parking Independent' },
+    { nums: [21,22,23], type: 'Puzzle Parking Independent' },
+    { nums: [24,25,26], type: 'Pit Parking Independent' },
+    { nums: [27,28,29], type: 'Pit Parking Independent' },
+  ];
+  groups.forEach(g => zone.appendChild(makePG(g.nums, g.type)));
 }
 
 function updateStats() {
-  document.getElementById('cOpen').textContent = slots.filter(d => d.status === 'open').length;
-  document.getElementById('cAssigned').textContent = slots.filter(d => d.status === 'assigned').length;
-  document.getElementById('cConflict').textContent = slots.filter(d => d.status === 'conflict').length;
+  document.getElementById('cOpen').textContent     = slots.filter(d => d.status==='open').length;
+  document.getElementById('cAssigned').textContent = slots.filter(d => d.status==='assigned').length;
+  document.getElementById('cConflict').textContent = slots.filter(d => d.status==='conflict').length;
 }
 
-// === TOOLTIP ===
+// ── TOOLTIP ──
 function showTooltip(e, d) {
   const tt = document.getElementById('tooltip');
-  document.getElementById('tt-title').textContent = `Slot #${d.slot}`;
-  document.getElementById('tt-status').textContent = d.status.charAt(0).toUpperCase() + d.status.slice(1);
-  document.getElementById('tt-status').style.color = d.status === 'open' ? 'var(--green)' : d.status === 'assigned' ? 'var(--blue)' : 'var(--red)';
-  document.getElementById('tt-sales').textContent = d.sales ? `${d.sales}${d.salesFlat ? ' ('+d.salesFlat+')' : ''}` : '—';
-  document.getElementById('tt-redev').textContent = d.redev ? `${d.redev}${d.redevFlat ? ' ('+d.redevFlat+')' : ''}` : '—';
-  document.getElementById('tt-type').textContent = d.type;
-  document.getElementById('tt-location').textContent = d.zone.charAt(0).toUpperCase() + d.zone.slice(1) + ' Side' + (d.stack ? ` (Stack ${d.stack})` : '');
+  document.getElementById('tt-title').textContent  = `Slot #${d.slot}`;
+  const st = document.getElementById('tt-status');
+  st.textContent  = d.status.charAt(0).toUpperCase() + d.status.slice(1);
+  st.style.color  = d.status==='open' ? 'var(--green)' : d.status==='assigned' ? 'var(--blue)' : 'var(--red)';
+  document.getElementById('tt-sales').textContent  = d.sales ? `${d.sales}${d.salesFlat?' ('+d.salesFlat+')':''}` : '—';
+  document.getElementById('tt-redev').textContent  = d.redev ? `${d.redev}${d.redevFlat?' ('+d.redevFlat+')':''}` : '—';
+  document.getElementById('tt-type').textContent   = d.type;
+  const locMap = { back:'Back Side (Elevation-3)', right:'Right Side', left:'Left Side', bottom:'Front/Bottom Row' };
+  document.getElementById('tt-loc').textContent = locMap[d.zone] || d.zone;
   tt.classList.add('show');
   const rect = e.target.closest('.slot').getBoundingClientRect();
-  tt.style.left = Math.min(rect.right + 8, window.innerWidth - 220) + 'px';
-  tt.style.top = Math.max(rect.top - 20, 10) + 'px';
+  tt.style.left = Math.min(rect.right + 8, window.innerWidth - 225) + 'px';
+  tt.style.top  = Math.max(rect.top - 10, 10) + 'px';
 }
+function hideTooltip() { document.getElementById('tooltip').classList.remove('show'); }
 
-function hideTooltip() {
-  document.getElementById('tooltip').classList.remove('show');
-}
-
-// === SEARCH ===
+// ── SEARCH ──
 function searchSlots(query) {
   query = query.toLowerCase().trim();
   document.querySelectorAll('.slot').forEach(el => {
@@ -351,20 +420,21 @@ function searchSlots(query) {
       d.redev.toLowerCase().includes(query) ||
       d.salesFlat.toLowerCase().includes(query) ||
       d.redevFlat.toLowerCase().includes(query);
-    el.classList.toggle('highlight', query && match);
-    el.style.opacity = !query || match ? '1' : '0.25';
+    el.classList.toggle('highlight', !!query && match);
+    el.style.opacity = !query || match ? '1' : '0.2';
   });
 }
 
-// === INIT ===
+// ── INIT ──
 renderBack();
-renderZone('front');
-renderZone('left');
+renderLeft();
 renderRight();
+renderBottom();
 updateStats();
 
-// Close tooltip on outside click
-document.addEventListener('click', e => { if (!e.target.closest('.slot') && !e.target.closest('.tooltip')) hideTooltip(); });
+document.addEventListener('click', e => {
+  if (!e.target.closest('.slot') && !e.target.closest('.tooltip')) hideTooltip();
+});
 </script>
 </body>
 </html>
