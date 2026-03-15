@@ -72,7 +72,6 @@
 <div class="map-wrap">
   <svg id="svg" viewBox="0 0 2200 3400" preserveAspectRatio="xMidYMid meet"
        xmlns="http://www.w3.org/2000/svg">
-    <!-- JS-generated below -->
   </svg>
 </div>
 
@@ -80,15 +79,19 @@
 // ============================================================
 // COORDINATE SYSTEM
 // 1 SVG unit = 1 cm  |  100 units = 1 metre
-// ViewBox: 2200 x 3400  =  22m wide x 34m deep
+// ViewBox: 2200 x 3400  =  22 m wide x 34 m deep
 //
-// Derived from blueprint dimension markers:
-//   Back width  = 5 bays x M-3 (300 units) = 1500 units
-//   South depth = 300 units (3m, one conventional bay)
-//   North depth = 300 units (3m, one conventional bay)
-//   Total width = 300 + 1500 + 300 + padding = 2200
-//   Back parking (h=500) + bund (h=100) + building (h=1920) +
-//   driveway (h=130) + front parking (h=500) + margins = 3400
+// Key y bands:
+//   0–194    back driveway
+//   200–480  back parking (15 pit slots, h=280)
+//   640–720  bund wall
+//   720–2640 building zone (south + north wall slots embedded)
+//   2640–768 front driveway
+//   2780–260 front parking (h=480)
+//
+// Stacked parking = mechanical hydraulic lift; multiple cars share
+// one physical footprint at different levels. Shown as a single box
+// divided into labelled levels.
 // ============================================================
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -113,8 +116,6 @@ app(el('style', {}, `
   .bldg-bg   { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 18; }
   .bldg-name { font: 700 105px/1 Inter,system-ui; fill: #334155; letter-spacing: 1px; }
   .bldg-sub  { font: 400 58px/1 Inter,system-ui; fill: #94a3b8; }
-  .blk-bg    { fill: #f1f5f9; stroke: #e2e8f0; stroke-width: 8; }
-  .blk-txt   { font: 500 46px/1 Inter,system-ui; fill: #94a3b8; }
   .pg-pit    { fill: #eff6ff; stroke: #93c5fd; stroke-width: 10; stroke-dasharray: 26 13; }
   .pg-conv   { fill: #f0fdf4; stroke: #86efac; stroke-width: 10; stroke-dasharray: 26 13; }
   .pg-stack  { fill: #fffbeb; stroke: #fbbf24; stroke-width: 10; stroke-dasharray: 26 13; }
@@ -124,6 +125,7 @@ app(el('style', {}, `
   .slot-n-sm { font: 700 56px/1 Inter,system-ui; fill: #1e293b; }
   .zlbl      { font: 700 62px/1 Inter,system-ui; fill: #94a3b8; letter-spacing: 6px; }
   .pg-type   { font: 600 44px/1 Inter,system-ui; fill: #94a3b8; letter-spacing: 1px; }
+  .stk-div   { stroke: #cbd5e1; stroke-width: 5; stroke-dasharray: 14 7; }
 `));
 
 // ─── HATCH PATTERN ────────────────────────────────────────
@@ -143,173 +145,110 @@ app(el('text', { x:1100, y:108, class:'dwy-txt', 'text-anchor':'middle',
                  'dominant-baseline':'central' },
        'ELEVATION-3  —  DRIVE WAY'));
 
-// ─── BUND WALL (between back parking & building) ──────────
-app(el('rect', { x:300, y:706, width:1600, height:90, class:'bund' }));
+// ─── BUND WALL ────────────────────────────────────────────
+app(el('rect', { x:300, y:640, width:1600, height:80, class:'bund' }));
 
 // ─── BUILDING CORE ────────────────────────────────────────
-app(el('rect', { x:300, y:800, width:1600, height:1920, class:'bldg-bg' }));
-
-// Internal building blocks
-[
-  [320,  828, 370, 270, 'TOILET'],
-  [800,  828, 400, 270, 'STAIRCASE'],
-  [820, 1170, 200, 360, 'LIFT'],
-  [1400, 828, 200, 780, 'GOODS\nLIFT'],
-  [720, 1760, 560, 360, 'LOBBY'],
-  [700, 2240, 500, 180, 'DUCT ABOVE'],
-].forEach(([x,y,w,h,label]) => {
-  app(el('rect', { x, y, width:w, height:h, class:'blk-bg', rx:6 }));
-  const lines = label.split('\n');
-  lines.forEach((line, i) => {
-    const cy = y + h/2 + (i - (lines.length-1)/2) * 58;
-    app(el('text', { x:x+w/2, y:cy, class:'blk-txt',
-                     'text-anchor':'middle', 'dominant-baseline':'central' }, line));
-  });
-});
-
-// Building name
-app(el('text', { x:1100, y:1520, class:'bldg-name',
+app(el('rect', { x:300, y:720, width:1600, height:1920, class:'bldg-bg' }));
+app(el('text', { x:1100, y:1510, class:'bldg-name',
                  'text-anchor':'middle', 'dominant-baseline':'central' },
      'ANUPRITHA B'));
-app(el('text', { x:1100, y:1645, class:'bldg-sub',
+app(el('text', { x:1100, y:1635, class:'bldg-sub',
                  'text-anchor':'middle', 'dominant-baseline':'central' },
      'Residential Building'));
 
 // ─── FRONT DRIVEWAY ───────────────────────────────────────
-app(el('rect', { x:0, y:2720, width:2200, height:128, class:'dwy' }));
-app(el('text', { x:1100, y:2787, class:'dwy-txt', 'text-anchor':'middle',
+app(el('rect', { x:0, y:2640, width:2200, height:128, class:'dwy' }));
+app(el('text', { x:1100, y:2707, class:'dwy-txt', 'text-anchor':'middle',
                  'dominant-baseline':'central' },
        'DRIVE WAY  —  FRONT ENTRY'));
 
-// Ramp indicator
-app(el('text', { x:2020, y:2860, class:'pg-type', 'text-anchor':'middle' }, 'RAMP UP'));
+// ─── RENDER HELPERS ───────────────────────────────────────
 
-// ─── SLOT DATA ────────────────────────────────────────────
-// [id, x, y, w, h, type]
-// Back: 1 SVG unit = 1cm. Pit bays: 100 wide x 500 deep. 3 slots per M-3 (300) bay.
-// Sides: 300 wide (3m depth into site) x 250 tall (2.5m along wall). Rotated orientation.
-// Front: 200 wide x 500 deep.
-const SLOTS = [
-  // BACK — 5 pit groups x 3 (slots 1-15)
-  // Bay 1: x 300-600
-  [1,  300,200, 100,500,'pit'],
-  [2,  400,200, 100,500,'pit'],
-  [3,  500,200, 100,500,'pit'],
-  // Bay 2: x 600-900
-  [4,  600,200, 100,500,'pit'],
-  [5,  700,200, 100,500,'pit'],
-  [6,  800,200, 100,500,'pit'],
-  // Bay 3: x 900-1200
-  [7,  900,200, 100,500,'pit'],
-  [8, 1000,200, 100,500,'pit'],
-  [9, 1100,200, 100,500,'pit'],
-  // Bay 4: x 1200-1500
-  [10,1200,200, 100,500,'pit'],
-  [11,1300,200, 100,500,'pit'],
-  [12,1400,200, 100,500,'pit'],
-  // Bay 5: x 1500-1800
-  [13,1500,200, 100,500,'pit'],
-  [14,1600,200, 100,500,'pit'],
-  [15,1700,200, 100,500,'pit'],
-
-  // SOUTH SIDE (left wall) — conventional upper, stack lower
-  // Slots touch left wall (x=0), depth = 300 into site
-  [34,  0, 860,300,250,'conv'],
-  [35,  0,1110,300,250,'conv'],
-  // gap ~1000 units (toilet block + staircase landing)
-  [16,  0,2110,300,250,'stack'],
-  [17,  0,2360,300,250,'stack'],
-
-  // NORTH SIDE (right wall) — conv + pit groups + pit groups
-  // Slots touch right wall at x=1900, depth = 300 into site
-  [33,1900, 860,300,250,'conv'],
-  // small gap after bund wall / retaining wall
-  [30,1900,1060,300,250,'pit'],
-  [31,1900,1310,300,250,'pit'],
-  [32,1900,1560,300,250,'pit'],
-  // gap: duct / goods lift zone
-  [27,1900,1920,300,250,'pit'],
-  [28,1900,2170,300,250,'pit'],
-  [29,1900,2420,300,250,'pit'],
-
-  // FRONT — pit + puzzle + pit
-  // y=2850 (below driveway), 200 wide x 500 deep
-  [18,  80,2850,200,500,'pit'],
-  [19, 280,2850,200,500,'pit'],
-  [20, 480,2850,200,500,'pit'],
-  [21, 680,2850,200,500,'puzzle'],
-  [22, 880,2850,200,500,'puzzle'],
-  [23,1080,2850,200,500,'puzzle'],
-  [24,1400,2850,200,500,'pit'],
-  [25,1600,2850,200,500,'pit'],
-  [26,1800,2850,200,500,'pit'],
-];
-
-// ─── GROUP BORDERS ────────────────────────────────────────
-// [x, y, w, h, type, label]
-const GROUPS = [
-  // Back — 5 pit groups
-  [294,194,312,512,'pit','Pit'],
-  [594,194,312,512,'pit','Pit'],
-  [894,194,312,512,'pit','Pit'],
-  [1194,194,312,512,'pit','Pit'],
-  [1494,194,312,512,'pit','Pit'],
-  // South upper (34,35)
-  [0,854,306,512,'conv','Conv'],
-  // South lower (16,17)
-  [0,2104,306,512,'stack','Stack'],
-  // North: 33 single
-  [1894,854,306,262,'conv','Conv'],
-  // North: 30-32
-  [1894,1054,306,762,'pit','Pit'],
-  // North: 27-29
-  [1894,1914,306,762,'pit','Pit'],
-  // Front A (18-20)
-  [74,2844,612,512,'pit','Pit'],
-  // Front B (21-23)
-  [674,2844,412,512,'puzzle','Puzzle'],
-  // Front C (24-26)
-  [1394,2844,612,512,'pit','Pit'],
-];
-
-// Draw groups (behind slots)
-GROUPS.forEach(([x,y,w,h,type,label]) => {
-  app(el('rect', { x, y, width:w, height:h, class:`pg-${type}`, rx:10 }));
-  // Type label — placed just below the group top edge
-  app(el('text', { x: x+w/2, y: y+50, class:'pg-type',
-                   'text-anchor':'middle', 'dominant-baseline':'central' }, label));
-});
-
-// ─── DRAW SLOTS ───────────────────────────────────────────
-SLOTS.forEach(([id,x,y,w,h,type]) => {
+// Single slot box + centred number
+function renderSlot(id, x, y, w, h) {
   app(el('rect', { x, y, width:w, height:h, class:'slot-r', rx:6 }));
-  // Use smaller font for narrow pit slots (w=100)
   const cls = w < 150 ? 'slot-n-sm' : 'slot-n';
   app(el('text', { x: x+w/2, y: y+h/2, class:cls,
                    'text-anchor':'middle', 'dominant-baseline':'central' }, id));
-});
+}
+
+// Stacked parking group — single physical footprint, multiple hydraulic levels.
+// Rendered as one tall box divided into per-level slot boxes.
+function renderStack(ids, x, y, w, totalH, type) {
+  const n   = ids.length;
+  const lvH = totalH / n;
+  // Outer group border
+  app(el('rect', { x, y, width:w, height:totalH, class:`pg-${type}`, rx:10 }));
+  // Per-level slot boxes
+  ids.forEach((id, i) => {
+    renderSlot(id, x+6, y + i*lvH + 6, w-12, lvH-12);
+  });
+  // Divider lines between levels
+  for (let i = 1; i < n; i++) {
+    const divY = Math.round(y + i*lvH);
+    app(el('line', { x1:x+20, y1:divY, x2:x+w-20, y2:divY, class:'stk-div' }));
+  }
+}
+
+// ─── BACK ROW — 5 pit groups × 3 slots (slots 1–15) ──────
+// Each M-3 bay = 300 units wide, 3 pit slots of 100 each.
+// Group borders
+[294, 594, 894, 1194, 1494].forEach(gx =>
+  app(el('rect', { x:gx, y:194, width:312, height:296, class:'pg-pit', rx:10 })));
+// Slots — uniform 100 × 280
+for (let i = 0; i < 15; i++) {
+  renderSlot(i+1, 300 + i*100, 200, 100, 280);
+}
+
+// ─── SOUTH SIDE (left wall, x = 0) ───────────────────────
+// Conventional pair: 34, 35
+app(el('rect', { x:0, y:720, width:300, height:590, class:'pg-conv', rx:10 }));
+renderSlot(34,  6,  740, 288, 260);
+renderSlot(35,  6, 1030, 288, 260);
+// ~600-unit gap = staircase / toilet block zone (~6 m)
+// Stack: 16 + 17 (two hydraulic levels)
+renderStack([16,17], 0, 1900, 300, 540, 'stack');
+
+// ─── NORTH SIDE (right wall, x = 1900) ───────────────────
+// Conventional: 33 (single)
+app(el('rect', { x:1900, y:720, width:300, height:296, class:'pg-conv', rx:10 }));
+renderSlot(33, 1906, 740, 288, 260);
+// Stack: 30, 31, 32 (three levels)
+renderStack([30,31,32], 1900, 1100, 300, 800, 'stack');
+// Stack: 27, 28, 29 (three levels) — ends flush with front driveway
+renderStack([27,28,29], 1900, 2000, 300, 640, 'stack');
+
+// ─── FRONT ROW ────────────────────────────────────────────
+// Centred between x=300 (south zone end) and x=1900 (north zone start).
+// Left-to-right: Stack A (18-20) | Puzzle B (21-23) | Stack C (24-26)
+
+// Stack A: 18 + 19 + 20
+renderStack([18,19,20], 410, 2780, 220, 480, 'stack');
+
+// Puzzle group border + individual slots
+app(el('rect', { x:740, y:2770, width:720, height:500, class:'pg-puzzle', rx:10 }));
+renderSlot(21,  750, 2780, 220, 480);
+renderSlot(22,  990, 2780, 220, 480);
+renderSlot(23, 1230, 2780, 220, 480);
+
+// Stack C: 24 + 25 + 26
+renderStack([24,25,26], 1570, 2780, 220, 480, 'stack');
 
 // ─── SITE BOUNDARY (drawn last, on top) ───────────────────
 app(el('rect', { x:0, y:0, width:2200, height:3400, class:'site-bnd' }));
 
 // ─── ZONE DIRECTION LABELS ────────────────────────────────
-// BACK SIDE — top
 app(el('text', { x:1100, y:148, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central' },
      'BACK SIDE'));
-
-// FRONT SIDE — bottom
 app(el('text', { x:1100, y:3360, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central' },
      'FRONT SIDE'));
-
-// SOUTH SIDE — left (rotated)
 app(el('text', { x:100, y:1700, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central',
                  transform:'rotate(-90,100,1700)' },
      'SOUTH SIDE'));
-
-// NORTH SIDE — right (rotated)
 app(el('text', { x:2100, y:1700, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central',
                  transform:'rotate(90,2100,1700)' },
