@@ -56,16 +56,17 @@
   .zone-back .pg { flex: 1; }
   .zone-back .pg-row { flex-direction: column; align-items: center; gap: 3px; }
 
+  /* Side zones span the full building height — children are absolutely placed */
   .zone-left {
-    top: 24%; left: 0%; width: 13%;
-    display: flex; flex-direction: column; gap: 5px; padding: 4px 2px;
-    align-items: center;
+    top: 21%; left: 0%; width: 13%; height: 52%;
   }
-
   .zone-right {
-    top: 24%; right: 0%; width: 24%;
-    display: flex; flex-direction: column; gap: 5px; padding: 4px;
-    align-items: center;
+    top: 21%; right: 0%; width: 24%; height: 52%;
+  }
+  .zone-left  .pg,
+  .zone-right .pg {
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
   }
 
   .zone-bottom {
@@ -190,17 +191,24 @@ function pg(nums, label, vertical) {
 const zBack = document.getElementById('zone-back');
 layout.back.forEach(nums => zBack.appendChild(pg(nums, 'Pit', true)));
 
-// South side — 34, 35 conventional (single each), 16-17 stack group
-const zLeft = document.getElementById('zone-left');
-zLeft.appendChild(pg([34], 'Conv', false));
-zLeft.appendChild(pg([35], 'Conv', false));
-zLeft.appendChild(pg([16,17], 'Stack', false));
+// Helper — place a group at a specific % from top of its zone
+function pgAt(nums, label, topPct, vertical) {
+  const el = pg(nums, label, vertical);
+  el.style.top = topPct + '%';
+  return el;
+}
 
-// North side — 33 conventional, 30-32 pit, 27-29 pit
+// South side — 34,35 near top (upper third), then big toilet/staircase gap, 16-17 near bottom
+const zLeft = document.getElementById('zone-left');
+zLeft.appendChild(pgAt([34],    'Conv',  4,  false));
+zLeft.appendChild(pgAt([35],    'Conv',  22, false));
+zLeft.appendChild(pgAt([16,17], 'Stack', 70, false));
+
+// North side — 33 just past bund wall (top), 30-32 after small gap, 27-29 past goods-lift gap
 const zRight = document.getElementById('zone-right');
-zRight.appendChild(pg([33], 'Conv', false));
-zRight.appendChild(pg([30,31,32], 'Pit', false));
-zRight.appendChild(pg([27,28,29], 'Pit', false));
+zRight.appendChild(pgAt([33],       'Conv', 3,  false));
+zRight.appendChild(pgAt([30,31,32], 'Pit',  26, false));
+zRight.appendChild(pgAt([27,28,29], 'Pit',  58, false));
 
 // Bottom — 5 groups as rows
 const zBottom = document.getElementById('zone-bottom');
