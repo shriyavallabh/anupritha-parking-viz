@@ -156,10 +156,30 @@
   .tooltip .detail { font-size: 0.76rem; color: var(--muted); margin-bottom: 3px; }
   .tooltip .detail span { color: var(--text); font-weight: 500; }
 
+  /* ── ZONE DIRECTION LABELS ── */
+  .zone-label {
+    position: absolute; z-index: 4;
+    font-size: 0.6rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: #5a5a8a;
+    background: rgba(10,10,26,0.7);
+    padding: 2px 7px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  /* Back label sits just above the back zone */
+  .label-back  { top: 0.4%; left: 50%; transform: translateX(-50%); }
+  /* Front label sits just above the bottom zone */
+  .label-front { bottom: 21.8%; left: 50%; transform: translateX(-50%); }
+  /* Left label, rotated, centred on left zone */
+  .label-left  { top: 47%; left: 0.2%; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; }
+  /* Right label, rotated, centred on right zone */
+  .label-right { top: 47%; right: 0%; transform: rotate(90deg) translateX(50%); transform-origin: right center; }
+
   @media (max-width: 480px) {
     :root { --slot: 33px; }
     .pg-label { font-size: 0.38rem; }
     .building-name { font-size: 0.8rem; }
+    .zone-label { font-size: 0.5rem; letter-spacing: 0.8px; }
   }
 </style>
 </head>
@@ -198,9 +218,11 @@
     <div class="driveway-banner top">▲ Elevation-3 — Drive Way (Back Entry)</div>
     <div class="driveway-banner bottom">▼ Drive Way (Front Entry)</div>
 
-    <!-- Side labels -->
-    <div class="side-label left">Side</div>
-    <div class="side-label right">Side</div>
+    <!-- Side / zone labels -->
+    <div class="zone-label label-back">◀ BACK SIDE ▶</div>
+    <div class="zone-label label-front">◀ FRONT SIDE ▶</div>
+    <div class="zone-label label-left">LEFT SIDE</div>
+    <div class="zone-label label-right">RIGHT SIDE</div>
 
     <!-- Building core -->
     <div class="building">
