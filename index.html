@@ -70,39 +70,39 @@
 <div class="header-divider"></div>
 
 <div class="map-wrap">
-  <svg id="svg" viewBox="0 0 2200 3400" preserveAspectRatio="xMidYMid meet"
+  <svg id="svg" viewBox="0 0 2200 3800" preserveAspectRatio="xMidYMid meet"
        xmlns="http://www.w3.org/2000/svg">
   </svg>
 </div>
 
 <script>
 // ============================================================
-// COORDINATE SYSTEM
-// 1 SVG unit = 1 cm  |  100 units = 1 metre
-// ViewBox: 2200 x 3400  =  22 m wide x 34 m deep
+// COORDINATE SYSTEM — 1 SVG unit = 1 cm, 100 units = 1 metre
+// ViewBox: 2200 × 3800
 //
-// Key y bands:
+// ALL individual slot boxes are a uniform 200 × 200.
+// Stacked parking groups (multi-level hydraulic) show as a single
+// column of 200 × 200 boxes stacked vertically with dividers.
+//
+// Back row uses a 3-row × 5-column grid so each of the 15 pit
+// slots gets the same 200 × 200 box as every other slot.
+//
+// Y bands:
 //   0–194    back driveway
-//   200–480  back parking (15 pit slots, h=280)
-//   640–720  bund wall
-//   720–2640 building zone (south + north wall slots embedded)
-//   2640–768 front driveway
-//   2780–260 front parking (h=480)
-//
-// Stacked parking = mechanical hydraulic lift; multiple cars share
-// one physical footprint at different levels. Shown as a single box
-// divided into labelled levels.
+//   200–820  back parking  (3 rows: y=200, 410, 620)
+//   860–940  bund wall
+//   940–2800 building zone
+//   2800–928 front driveway
+//   2940–560 front parking
 // ============================================================
 
 const NS = 'http://www.w3.org/2000/svg';
-
 function el(tag, attrs, text) {
   const e = document.createElementNS(NS, tag);
   for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
   if (text !== undefined) e.textContent = text;
   return e;
 }
-
 const svg = document.getElementById('svg');
 function app(e) { svg.appendChild(e); return e; }
 
@@ -122,9 +122,7 @@ app(el('style', {}, `
   .pg-puzzle { fill: #f5f3ff; stroke: #a78bfa; stroke-width: 10; stroke-dasharray: 26 13; }
   .slot-r    { fill: #ffffff; stroke: #94a3b8; stroke-width: 14; }
   .slot-n    { font: 700 72px/1 Inter,system-ui; fill: #1e293b; }
-  .slot-n-sm { font: 700 56px/1 Inter,system-ui; fill: #1e293b; }
   .zlbl      { font: 700 62px/1 Inter,system-ui; fill: #94a3b8; letter-spacing: 6px; }
-  .pg-type   { font: 600 44px/1 Inter,system-ui; fill: #94a3b8; letter-spacing: 1px; }
   .stk-div   { stroke: #cbd5e1; stroke-width: 5; stroke-dasharray: 14 7; }
 `));
 
@@ -137,122 +135,119 @@ defs.appendChild(pat);
 app(defs);
 
 // ─── BACKGROUND ───────────────────────────────────────────
-app(el('rect', { x:0, y:0, width:2200, height:3400, class:'bg' }));
+app(el('rect', { x:0, y:0, width:2200, height:3800, class:'bg' }));
 
 // ─── BACK DRIVEWAY ────────────────────────────────────────
 app(el('rect', { x:0, y:0, width:2200, height:194, class:'dwy' }));
 app(el('text', { x:1100, y:108, class:'dwy-txt', 'text-anchor':'middle',
-                 'dominant-baseline':'central' },
-       'ELEVATION-3  —  DRIVE WAY'));
+                 'dominant-baseline':'central' }, 'ELEVATION-3  —  DRIVE WAY'));
 
 // ─── BUND WALL ────────────────────────────────────────────
-app(el('rect', { x:300, y:640, width:1600, height:80, class:'bund' }));
+app(el('rect', { x:300, y:860, width:1600, height:80, class:'bund' }));
 
 // ─── BUILDING CORE ────────────────────────────────────────
-app(el('rect', { x:300, y:720, width:1600, height:1920, class:'bldg-bg' }));
-app(el('text', { x:1100, y:1510, class:'bldg-name',
-                 'text-anchor':'middle', 'dominant-baseline':'central' },
-     'ANUPRITHA B'));
-app(el('text', { x:1100, y:1635, class:'bldg-sub',
-                 'text-anchor':'middle', 'dominant-baseline':'central' },
-     'Residential Building'));
+app(el('rect', { x:300, y:940, width:1600, height:1860, class:'bldg-bg' }));
+app(el('text', { x:1100, y:1840, class:'bldg-name',
+                 'text-anchor':'middle', 'dominant-baseline':'central' }, 'ANUPRITHA B'));
+app(el('text', { x:1100, y:1965, class:'bldg-sub',
+                 'text-anchor':'middle', 'dominant-baseline':'central' }, 'Residential Building'));
 
 // ─── FRONT DRIVEWAY ───────────────────────────────────────
-app(el('rect', { x:0, y:2640, width:2200, height:128, class:'dwy' }));
-app(el('text', { x:1100, y:2707, class:'dwy-txt', 'text-anchor':'middle',
-                 'dominant-baseline':'central' },
-       'DRIVE WAY  —  FRONT ENTRY'));
+app(el('rect', { x:0, y:2800, width:2200, height:128, class:'dwy' }));
+app(el('text', { x:1100, y:2867, class:'dwy-txt', 'text-anchor':'middle',
+                 'dominant-baseline':'central' }, 'DRIVE WAY  —  FRONT ENTRY'));
 
 // ─── RENDER HELPERS ───────────────────────────────────────
 
-// Single slot box + centred number
-function renderSlot(id, x, y, w, h) {
-  app(el('rect', { x, y, width:w, height:h, class:'slot-r', rx:6 }));
-  const cls = w < 150 ? 'slot-n-sm' : 'slot-n';
-  app(el('text', { x: x+w/2, y: y+h/2, class:cls,
+// Uniform 200 × 200 slot box with centred number
+function renderSlot(id, x, y) {
+  app(el('rect', { x, y, width:200, height:200, class:'slot-r', rx:6 }));
+  app(el('text', { x:x+100, y:y+100, class:'slot-n',
                    'text-anchor':'middle', 'dominant-baseline':'central' }, id));
 }
 
-// Stacked parking group — single physical footprint, multiple hydraulic levels.
-// Rendered as one tall box divided into per-level slot boxes.
-function renderStack(ids, x, y, w, totalH, type) {
-  const n   = ids.length;
-  const lvH = totalH / n;
-  // Outer group border
-  app(el('rect', { x, y, width:w, height:totalH, class:`pg-${type}`, rx:10 }));
-  // Per-level slot boxes
-  ids.forEach((id, i) => {
-    renderSlot(id, x+6, y + i*lvH + 6, w-12, lvH-12);
-  });
-  // Divider lines between levels
+// Stacked parking: n × 200 column with dividers (each level = 200 × 200)
+function renderStack(ids, x, y, type) {
+  const n = ids.length;
+  const totalH = n * 200 + (n - 1) * 10;
+  app(el('rect', { x:x-10, y:y-10, width:220, height:totalH+20, class:`pg-${type}`, rx:10 }));
+  ids.forEach((id, i) => renderSlot(id, x, y + i * 210));
   for (let i = 1; i < n; i++) {
-    const divY = Math.round(y + i*lvH);
-    app(el('line', { x1:x+20, y1:divY, x2:x+w-20, y2:divY, class:'stk-div' }));
+    const dy = y + i * 210 - 5;
+    app(el('line', { x1:x+10, y1:dy, x2:x+190, y2:dy, class:'stk-div' }));
   }
 }
 
-// ─── BACK ROW — 5 pit groups × 3 slots (slots 1–15) ──────
-// Each M-3 bay = 300 units wide, 3 pit slots of 100 each.
-// Group borders
-[294, 594, 894, 1194, 1494].forEach(gx =>
-  app(el('rect', { x:gx, y:194, width:312, height:296, class:'pg-pit', rx:10 })));
-// Slots — uniform 100 × 280
-for (let i = 0; i < 15; i++) {
-  renderSlot(i+1, 300 + i*100, 200, 100, 280);
-}
+// ─── BACK ROW — 5 pit groups × 3 slots (1–15) ────────────
+// Each M-3 bay (300 units) holds one column of 3 stacked boxes.
+// Columns at x = 350, 650, 950, 1250, 1550 (centred in each bay).
+// Rows at y = 200, 410, 620 (200 tall + 10 gap).
 
-// ─── SOUTH SIDE (left wall, x = 0) ───────────────────────
-// Conventional pair: 34, 35
-app(el('rect', { x:0, y:720, width:300, height:590, class:'pg-conv', rx:10 }));
-renderSlot(34,  6,  740, 288, 260);
-renderSlot(35,  6, 1030, 288, 260);
-// ~600-unit gap = staircase / toilet block zone (~6 m)
-// Stack: 16 + 17 (two hydraulic levels)
-renderStack([16,17], 0, 1900, 300, 540, 'stack');
+const BACK_COLS = [350, 650, 950, 1250, 1550];
+const BACK_ROWS = [200, 410, 620];
 
-// ─── NORTH SIDE (right wall, x = 1900) ───────────────────
-// Conventional: 33 (single)
-app(el('rect', { x:1900, y:720, width:300, height:296, class:'pg-conv', rx:10 }));
-renderSlot(33, 1906, 740, 288, 260);
-// Stack: 30, 31, 32 (three levels)
-renderStack([30,31,32], 1900, 1100, 300, 800, 'stack');
-// Stack: 27, 28, 29 (three levels) — ends flush with front driveway
-renderStack([27,28,29], 1900, 2000, 300, 640, 'stack');
+// Group borders (one dashed blue rect per bay, wrapping all 3 rows)
+BACK_COLS.forEach(cx =>
+  app(el('rect', { x:cx-12, y:190, width:224, height:642, class:'pg-pit', rx:10 })));
+
+// Slots — column-major: 1,2,3 in col 0; 4,5,6 in col 1; etc.
+BACK_COLS.forEach((cx, col) => {
+  BACK_ROWS.forEach((ry, row) => {
+    renderSlot(col * 3 + row + 1, cx, ry);
+  });
+});
+
+// ─── SOUTH SIDE (left wall, x zone 0–300) ─────────────────
+// Conventional: 34, 35 — centred in the 300-wide zone (slot x=50)
+app(el('rect', { x:0, y:940, width:300, height:460, class:'pg-conv', rx:10 }));
+renderSlot(34, 50, 960);
+renderSlot(35, 50, 1180);
+// ~6 m gap (staircase / toilet block zone)
+// Stack: 16 + 17
+renderStack([16, 17], 50, 2120, 'stack');
+
+// ─── NORTH SIDE (right wall, x zone 1900–2200) ────────────
+// Conventional: 33 — slot x=1950
+app(el('rect', { x:1900, y:940, width:300, height:250, class:'pg-conv', rx:10 }));
+renderSlot(33, 1950, 960);
+// Stack: 30, 31, 32
+renderStack([30, 31, 32], 1950, 1250, 'stack');
+// ~2 m gap
+// Stack: 27, 28, 29
+renderStack([27, 28, 29], 1950, 2120, 'stack');
+// 2120 + 3×200 + 2×10 = 2120 + 620 = 2740 (within building zone ending 2800)
 
 // ─── FRONT ROW ────────────────────────────────────────────
-// Centred between x=300 (south zone end) and x=1900 (north zone start).
-// Left-to-right: Stack A (18-20) | Puzzle B (21-23) | Stack C (24-26)
+// Centred between x=300 and x=1900.
+// Layout: Stack-A | gap | Puzzle-21 | Puzzle-22 | Puzzle-23 | gap | Stack-C
+// Columns at x = 400, 700, 1000, 1300, 1600  (equal 300-unit spacing)
 
 // Stack A: 18 + 19 + 20
-renderStack([18,19,20], 410, 2780, 220, 480, 'stack');
+renderStack([18, 19, 20], 400, 2940, 'stack');
 
-// Puzzle group border + individual slots
-app(el('rect', { x:740, y:2770, width:720, height:500, class:'pg-puzzle', rx:10 }));
-renderSlot(21,  750, 2780, 220, 480);
-renderSlot(22,  990, 2780, 220, 480);
-renderSlot(23, 1230, 2780, 220, 480);
+// Puzzle group border + individual slots (covers x=700–1500)
+app(el('rect', { x:688, y:2930, width:824, height:220, class:'pg-puzzle', rx:10 }));
+renderSlot(21,  700, 2940);
+renderSlot(22, 1000, 2940);
+renderSlot(23, 1300, 2940);
 
 // Stack C: 24 + 25 + 26
-renderStack([24,25,26], 1570, 2780, 220, 480, 'stack');
+renderStack([24, 25, 26], 1600, 2940, 'stack');
 
-// ─── SITE BOUNDARY (drawn last, on top) ───────────────────
-app(el('rect', { x:0, y:0, width:2200, height:3400, class:'site-bnd' }));
+// ─── SITE BOUNDARY ────────────────────────────────────────
+app(el('rect', { x:0, y:0, width:2200, height:3800, class:'site-bnd' }));
 
 // ─── ZONE DIRECTION LABELS ────────────────────────────────
 app(el('text', { x:1100, y:148, class:'zlbl',
-                 'text-anchor':'middle', 'dominant-baseline':'central' },
-     'BACK SIDE'));
-app(el('text', { x:1100, y:3360, class:'zlbl',
-                 'text-anchor':'middle', 'dominant-baseline':'central' },
-     'FRONT SIDE'));
-app(el('text', { x:100, y:1700, class:'zlbl',
+                 'text-anchor':'middle', 'dominant-baseline':'central' }, 'BACK SIDE'));
+app(el('text', { x:1100, y:3770, class:'zlbl',
+                 'text-anchor':'middle', 'dominant-baseline':'central' }, 'FRONT SIDE'));
+app(el('text', { x:100, y:1900, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central',
-                 transform:'rotate(-90,100,1700)' },
-     'SOUTH SIDE'));
-app(el('text', { x:2100, y:1700, class:'zlbl',
+                 transform:'rotate(-90,100,1900)' }, 'SOUTH SIDE'));
+app(el('text', { x:2100, y:1900, class:'zlbl',
                  'text-anchor':'middle', 'dominant-baseline':'central',
-                 transform:'rotate(90,2100,1700)' },
-     'NORTH SIDE'));
+                 transform:'rotate(90,2100,1900)' }, 'NORTH SIDE'));
 </script>
 </body>
 </html>
