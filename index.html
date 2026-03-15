@@ -57,14 +57,14 @@
   .zone-back .pg-row { flex-direction: column; align-items: center; gap: 3px; }
 
   .zone-left {
-    top: 34%; left: 0%; width: 13%;
-    display: flex; flex-direction: column; gap: 6px; padding: 4px 2px;
+    top: 24%; left: 0%; width: 13%;
+    display: flex; flex-direction: column; gap: 5px; padding: 4px 2px;
     align-items: center;
   }
 
   .zone-right {
-    top: 27%; right: 0%; width: 24%;
-    display: flex; flex-direction: column; gap: 6px; padding: 4px;
+    top: 24%; right: 0%; width: 24%;
+    display: flex; flex-direction: column; gap: 5px; padding: 4px;
     align-items: center;
   }
 
@@ -158,14 +158,12 @@
 // Slot numbers per zone/group only — no names, no status, no data
 const layout = {
   back:   [[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15]],
-  left:   [[34],[35]],
-  right:  [[33],[30,31,32]],
+  left:   [[34],[35],[16,17]],          // South side: 34, 35, 16, 17
+  right:  [[33],[30,31,32],[27,28,29]], // North side: 33, 30-32, 27-29
   bottom: [
-    { nums:[16,17],    label:'Stack' },
     { nums:[18,19,20], label:'Pit' },
     { nums:[21,22,23], label:'Puzzle' },
     { nums:[24,25,26], label:'Pit' },
-    { nums:[27,28,29], label:'Pit' },
   ],
 };
 
@@ -192,14 +190,17 @@ function pg(nums, label, vertical) {
 const zBack = document.getElementById('zone-back');
 layout.back.forEach(nums => zBack.appendChild(pg(nums, 'Pit', true)));
 
-// Left — 34, 35 each as single
+// South side — 34, 35 conventional (single each), 16-17 stack group
 const zLeft = document.getElementById('zone-left');
-layout.left.forEach(nums => zLeft.appendChild(pg(nums, 'Conv', false)));
+zLeft.appendChild(pg([34], 'Conv', false));
+zLeft.appendChild(pg([35], 'Conv', false));
+zLeft.appendChild(pg([16,17], 'Stack', false));
 
-// Right — 33 single, then 30-32 row
+// North side — 33 conventional, 30-32 pit, 27-29 pit
 const zRight = document.getElementById('zone-right');
 zRight.appendChild(pg([33], 'Conv', false));
 zRight.appendChild(pg([30,31,32], 'Pit', false));
+zRight.appendChild(pg([27,28,29], 'Pit', false));
 
 // Bottom — 5 groups as rows
 const zBottom = document.getElementById('zone-bottom');
