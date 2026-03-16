@@ -194,7 +194,8 @@ function renderCard(id, x, y) {
   const c = C[s.type];
   const isVacant = s.name === 'Vacant';
   app(el('rect', { x, y, width:CW, height:CH, rx:10,
-    fill:c.cf, stroke:c.cs, 'stroke-width':2 }));
+    fill: isVacant ? '#ffffff' : c.cf,
+    stroke: isVacant ? '#cbd5e1' : c.cs, 'stroke-width':2 }));
   app(el('circle', { cx:x+34, cy:y+41, r:25, fill:CIRCLE }));
   app(el('text', { x:x+34, y:y+41,
     'text-anchor':'middle', 'dominant-baseline':'central',
