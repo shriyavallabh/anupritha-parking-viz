@@ -98,6 +98,17 @@
   .field-error.visible { display: block; }
   input.invalid { border-color: #fca5a5 !important; background: #fff5f5; }
 
+  .btn-edit {
+    padding: 3px 9px; font-size: 0.74rem; font-weight: 600;
+    border: 1px solid #cbd5e1; border-radius: 6px;
+    background: #f8fafc; color: #475569; cursor: pointer; font-family: inherit;
+  }
+  .btn-edit:hover { background: #e2e8f0; }
+  .cancel-edit {
+    font-size: 0.82rem; color: #64748b; cursor: pointer;
+    text-decoration: underline; margin-left: 8px;
+  }
+
   /* ── FILTER BAR ─────────────────────────────────────────────────────────── */
   .filter-bar {
     display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;
@@ -298,10 +309,11 @@
             <th>Type</th>
             <th>Make &amp; Model</th>
             <th>Registration No.</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr class="state-row"><td colspan="6"><span class="spinner"></span>Loading vehicle registry...</td></tr>
+          <tr class="state-row"><td colspan="7"><span class="spinner"></span>Loading vehicle registry...</td></tr>
         </tbody>
       </table>
     </div>
@@ -313,7 +325,7 @@
 // ── CONFIG ─────────────────────────────────────────────────────────────────
 // Published CSV from "Vehicle Registry" tab (File > Share > Publish to web)
 const SHEET_CSV  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTM1ApC0W_Xi1JIWU4ri_-bax72LzlmnkvwKaUkQgjJA-Pc9MnPZrfx4feZMkizA9DnMlcMHiIJlBI/pub?gid=122320667&single=true&output=csv';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5Du6IcxxOAxp7ecr2jdYJJQKZgxLpo1Gh7jzch5pvjln9nLfKJhVEwwbooxxomT73jw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzb1lYRIda_4pNPFCyyKRBzKdr93SUiscGX_jTjIIZGhDUxGFSMsOlFpyWT_PbKpILs0g/exec';
 
 let allData = [];
 
@@ -396,11 +408,11 @@ function renderTable(filter) {
     ? 'Showing ' + filtered.length + ' of ' + allData.length : '';
 
   if (allData.length === 0) {
-    tbody.innerHTML = '<tr class="state-row"><td colspan="6">No vehicles registered yet.</td></tr>';
+    tbody.innerHTML = '<tr class="state-row"><td colspan="7">No vehicles registered yet.</td></tr>';
     return;
   }
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr class="state-row"><td colspan="6">No records match your search.</td></tr>';
+    tbody.innerHTML = '<tr class="state-row"><td colspan="7">No records match your search.</td></tr>';
     return;
   }
 
@@ -412,6 +424,7 @@ function renderTable(filter) {
       <td><span class="type-badge ${r.type === '4W' ? 'fw' : 'tw'}">${esc(r.type)}</span></td>
       <td>${esc(r.makeModel)}</td>
       <td><span class="reg-tag">${esc(r.reg.toUpperCase())}</span></td>
+      <td><button class="btn-edit" data-flat="${esc(r.flat)}" data-reg="${esc(r.reg)}">Edit</button></td>
     </tr>`).join('');
 }
 
@@ -428,6 +441,46 @@ function getFilter() {
 
 document.getElementById('searchInput').addEventListener('input', () => renderTable(getFilter()));
 document.getElementById('typeFilter').addEventListener('change', () => renderTable(getFilter()));
+
+// ── EDIT MODE ──────────────────────────────────────────────────────────────
+let editKey = null;
+
+document.getElementById('tableBody').addEventListener('click', function(e) {
+  const btn = e.target.closest('.btn-edit');
+  if (!btn) return;
+  const flat = btn.dataset.flat;
+  const reg  = btn.dataset.reg;
+  const r    = allData.find(x => x.flat === flat && x.reg === reg);
+  if (!r) return;
+  editKey = reg;
+  document.getElementById('fFlat').value = flat;
+  document.getElementById('fFlat').dispatchEvent(new Event('change'));
+  document.getElementById('fVehicleType').value = r.type;
+  document.getElementById('fMakeModel').value   = r.makeModel;
+  document.getElementById('fReg').value         = r.reg;
+  document.getElementById('fTenant').value      = r.tenant || '';
+  document.getElementById('submitBtn').textContent = 'Update Vehicle';
+  document.getElementById('formStatus').textContent = '';
+  let cl = document.getElementById('cancelEdit');
+  if (!cl) {
+    cl = document.createElement('span');
+    cl.id = 'cancelEdit'; cl.className = 'cancel-edit'; cl.textContent = 'Cancel';
+    cl.onclick = resetEditMode;
+    document.querySelector('.form-actions').appendChild(cl);
+  }
+  cl.style.display = 'inline';
+  document.getElementById('vehicleForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+function resetEditMode() {
+  editKey = null;
+  document.getElementById('submitBtn').textContent = 'Submit Vehicle';
+  const cl = document.getElementById('cancelEdit');
+  if (cl) cl.style.display = 'none';
+  document.getElementById('fName').disabled = false;
+  document.getElementById('fNameHint').style.display = 'none';
+  document.getElementById('vehicleForm').reset();
+}
 
 // ── REGISTRATION NUMBER VALIDATION ─────────────────────────────────────────
 // Indian vehicle reg: XX00XX0000 or XX00X0000 (strips spaces before checking)
@@ -455,7 +508,7 @@ fRegInput.addEventListener('blur', () => {
 // ── OWNER LOOKUP (fixed — flat + owner = primary key) ──────────────────────
 const FLAT_OWNERS = {
   '101': 'Mr. Marukumar',  '102': 'Mr. Naik',        '103': 'Mr. Karulkar',
-  '201': 'Mr. Ponkshe',    '202': 'Mrs. Tonapi',      '203': 'Mr. Damle',
+  '201': 'Mr. Ponkshe',    '202': 'Mrs. Tonapi',      '203': 'Saurabh Damle',
   '301': 'Mr. Belgi',      '302': 'Mr. Awachat',      '303': 'Mrs. Kelkar',
   '401': 'Mr. Pathak',     '402': 'Mr. Apte',         '403': 'Mr. Sambre',
   '501': 'Mr. Wagal',      '502': 'Mr. Bhosle',       '503': 'Mr. Bhagurkar',
@@ -507,26 +560,33 @@ document.getElementById('vehicleForm').addEventListener('submit', async function
   status.className = 'form-status';
 
   try {
-    // POST + no-cors: the industry-standard pattern for Apps Script from GitHub Pages.
-    // Response is opaque (unreadable) but the write goes through reliably.
+    const isEdit = editKey !== null;
     await fetch(SCRIPT_URL, {
       method: 'POST',
       mode:   'no-cors',
-      body:   JSON.stringify({ flat, owner, tenant, vehicleType, makeModel, regNumber }),
+      body:   JSON.stringify({
+        action:       isEdit ? 'update' : 'insert',
+        oldRegNumber: isEdit ? editKey : undefined,
+        flat, owner, tenant, vehicleType, makeModel, regNumber,
+      }),
     });
 
-    // Optimistic update: show new row immediately in the table
-    allData.push({ flat, owner, tenant, type: vehicleType, makeModel, reg: regNumber });
+    // Optimistic update
+    if (isEdit) {
+      const idx = allData.findIndex(x => x.flat === flat && x.reg === editKey);
+      if (idx !== -1) allData[idx] = { flat, owner, tenant, type: vehicleType, makeModel, reg: regNumber };
+    } else {
+      allData.push({ flat, owner, tenant, type: vehicleType, makeModel, reg: regNumber });
+    }
     allData.sort((a, b) => a.flat.localeCompare(b.flat, undefined, { numeric: true }));
     renderTable(getFilter());
 
-    status.textContent = 'Registered successfully. Confirmed in the sheet within 1-2 minutes.';
+    status.textContent = isEdit
+      ? 'Updated successfully. Sheet will reflect the change within 1-2 minutes.'
+      : 'Registered successfully. Confirmed in the sheet within 1-2 minutes.';
     status.className = 'form-status';
 
-    // Reset form — owner field re-enables naturally when flat resets to empty
-    document.getElementById('fName').disabled = false;
-    document.getElementById('fNameHint').style.display = 'none';
-    this.reset();
+    resetEditMode();
 
     // Re-fetch after 90s to sync with published CSV
     setTimeout(() => fetchAndRender(true), 90000);
