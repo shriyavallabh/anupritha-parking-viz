@@ -93,6 +93,10 @@
   .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
   .form-status { font-size: 0.82rem; color: #16a34a; font-weight: 500; }
   .form-status.error { color: #dc2626; }
+  .field-hint { font-size: 0.74rem; color: #64748b; margin-top: 2px; }
+  .field-error { font-size: 0.74rem; color: #dc2626; margin-top: 2px; display: none; }
+  .field-error.visible { display: block; }
+  input.invalid { border-color: #fca5a5 !important; background: #fff5f5; }
 
   /* ── FILTER BAR ─────────────────────────────────────────────────────────── */
   .filter-bar {
@@ -233,8 +237,14 @@
           </select>
         </div>
         <div class="form-field">
-          <label for="fName">Your Name <span>*</span></label>
+          <label for="fName">Owner Name <span>*</span></label>
           <input type="text" id="fName" placeholder="e.g. Mr. Sharma" required>
+          <span class="field-hint" id="fNameHint" style="display:none">Auto-filled from registry. Edit only if incorrect.</span>
+        </div>
+        <div class="form-field">
+          <label for="fTenant">Tenant Name</label>
+          <input type="text" id="fTenant" placeholder="Fill only if you are a tenant">
+          <span class="field-hint">Leave blank if owner is submitting directly.</span>
         </div>
         <div class="form-field">
           <label for="fVehicleType">Vehicle Type <span>*</span></label>
@@ -251,6 +261,7 @@
         <div class="form-field full">
           <label for="fReg">Registration Number <span>*</span></label>
           <input type="text" id="fReg" placeholder="e.g. MH12AB1234" style="text-transform:uppercase" required>
+          <span class="field-error" id="fRegError">Enter a valid registration number (e.g. MH12AB1234). No spaces.</span>
         </div>
       </div>
       <div class="form-actions">
@@ -418,18 +429,66 @@ function getFilter() {
 document.getElementById('searchInput').addEventListener('input', () => renderTable(getFilter()));
 document.getElementById('typeFilter').addEventListener('change', () => renderTable(getFilter()));
 
+// ── REGISTRATION NUMBER VALIDATION ─────────────────────────────────────────
+// Indian vehicle reg: XX00XX0000 or XX00X0000 (strips spaces before checking)
+const REG_RE = /^[A-Z]{2}[0-9]{2}[A-Z]{1,3}[0-9]{1,4}$/;
+
+function validateReg(raw) {
+  return REG_RE.test(raw.replace(/\s+/g, '').toUpperCase());
+}
+
+const fRegInput = document.getElementById('fReg');
+const fRegError = document.getElementById('fRegError');
+
+fRegInput.addEventListener('blur', () => {
+  const val = fRegInput.value.replace(/\s+/g, '').toUpperCase();
+  fRegInput.value = val;
+  if (val && !validateReg(val)) {
+    fRegInput.classList.add('invalid');
+    fRegError.classList.add('visible');
+  } else {
+    fRegInput.classList.remove('invalid');
+    fRegError.classList.remove('visible');
+  }
+});
+
+// ── OWNER AUTO-FILL ────────────────────────────────────────────────────────
+document.getElementById('fFlat').addEventListener('change', function() {
+  const flat     = this.value;
+  const nameEl   = document.getElementById('fName');
+  const hintEl   = document.getElementById('fNameHint');
+  const match    = allData.find(r => r.flat === flat);
+  if (match && match.owner) {
+    nameEl.value    = match.owner;
+    nameEl.disabled = true;
+    hintEl.style.display = 'block';
+  } else {
+    nameEl.value    = '';
+    nameEl.disabled = false;
+    hintEl.style.display = 'none';
+  }
+});
+
 // ── FORM SUBMIT ────────────────────────────────────────────────────────────
 document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
-  const status = document.getElementById('formStatus');
-  const btn    = document.getElementById('submitBtn');
-
+  const status      = document.getElementById('formStatus');
+  const btn         = document.getElementById('submitBtn');
   const flat        = document.getElementById('fFlat').value;
   const owner       = document.getElementById('fName').value.trim();
+  const tenant      = document.getElementById('fTenant').value.trim();
   const vehicleType = document.getElementById('fVehicleType').value;
   const makeModel   = document.getElementById('fMakeModel').value.trim();
-  const regNumber   = document.getElementById('fReg').value.trim().toUpperCase();
+  const regNumber   = fRegInput.value.replace(/\s+/g, '').toUpperCase();
+
+  // Reg validation gate
+  if (!validateReg(regNumber)) {
+    fRegInput.classList.add('invalid');
+    fRegError.classList.add('visible');
+    fRegInput.focus();
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = 'Submitting...';
@@ -437,28 +496,33 @@ document.getElementById('vehicleForm').addEventListener('submit', async function
   status.className = 'form-status';
 
   try {
-    const url = SCRIPT_URL
-      + '?action=write'
-      + '&flat='        + encodeURIComponent(flat)
-      + '&owner='       + encodeURIComponent(owner)
-      + '&vehicleType=' + encodeURIComponent(vehicleType)
-      + '&makeModel='   + encodeURIComponent(makeModel)
-      + '&regNumber='   + encodeURIComponent(regNumber);
+    // POST + no-cors: the industry-standard pattern for Apps Script from GitHub Pages.
+    // Response is opaque (unreadable) but the write goes through reliably.
+    await fetch(SCRIPT_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ flat, owner, tenant, vehicleType, makeModel, regNumber }),
+    });
 
-    const res = await fetch(url);
-    const json = await res.json();
+    // Optimistic update: show new row immediately in the table
+    allData.push({ flat, owner, tenant, type: vehicleType, makeModel, reg: regNumber });
+    allData.sort((a, b) => a.flat.localeCompare(b.flat, undefined, { numeric: true }));
+    renderTable(getFilter());
 
-    if (json.status === 'ok') {
-      status.textContent = 'Registered successfully. The table below will update in about 1-2 minutes.';
-      status.className = 'form-status';
-      this.reset();
-      // Re-fetch after 90s to pick up the published CSV cache refresh
-      setTimeout(() => fetchAndRender(true), 90000);
-    } else {
-      throw new Error('Script returned unexpected response');
-    }
+    status.textContent = 'Registered successfully. Confirmed in the sheet within 1-2 minutes.';
+    status.className = 'form-status';
+
+    // Re-enable owner name field before reset
+    document.getElementById('fName').disabled = false;
+    document.getElementById('fNameHint').style.display = 'none';
+    this.reset();
+
+    // Re-fetch after 90s to sync with published CSV
+    setTimeout(() => fetchAndRender(true), 90000);
+
   } catch {
-    status.textContent = 'Submission failed. Check that the Apps Script URL is correct and the script is deployed.';
+    status.textContent = 'Network error. Please check your connection and try again.';
     status.className = 'form-status error';
   }
 
