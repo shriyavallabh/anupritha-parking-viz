@@ -72,6 +72,14 @@
     <span class="legend-item"><span class="legend-swatch puzzle"></span>Puzzle Parking</span>
     <span class="legend-item"><span class="legend-swatch wc"></span>Toilet Block</span>
   </div>
+  <div class="legend" style="margin-top:8px">
+    <span class="legend-item" style="font-weight:600;color:#334155">Position Levels:</span>
+    <span class="legend-item"><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:5px;background:#dc2626;color:#fff;font-size:0.72rem;font-weight:700;flex-shrink:0">U</span>Upper</span>
+    <span class="legend-item"><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:5px;background:#f59e0b;color:#fff;font-size:0.72rem;font-weight:700;flex-shrink:0">M</span>Middle</span>
+    <span class="legend-item"><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:5px;background:#6366f1;color:#fff;font-size:0.72rem;font-weight:700;flex-shrink:0">B</span>Bottom</span>
+    <span class="legend-item"><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:5px;background:#22c55e;color:#fff;font-size:0.72rem;font-weight:700;flex-shrink:0">G</span>Ground (Stack)</span>
+    <span class="legend-item" style="color:#94a3b8;font-style:italic">Applies to Pit &amp; Stack parkings only</span>
+  </div>
 </div>
 
 <script>
@@ -144,6 +152,33 @@ const SLOTS = {
   35: { name:'Mr. Pethkar',     flat:'901',     type:'conv'  },
 };
 
+// ── POSITION DATA (U=Upper, M=Middle, B=Bottom, G=Ground) ─────────────────
+// Pit parking: 3 levels (U/M/B). Stack parking: 2 levels (U/G).
+// Puzzle & conventional: no position labels.
+const POS = {
+  // Back row pits
+  1:'U',  2:'M',  3:'B',
+  4:'U',  5:'M',  6:'B',
+  7:'U',  8:'M',  9:'B',
+  10:'U', 11:'M', 12:'B',
+  13:'U', 14:'M', 15:'B',
+  // Stack (south side)
+  16:'U', 17:'G',
+  // Front pits
+  18:'U', 19:'M', 20:'B',
+  // North side pits
+  24:'U', 25:'M', 26:'B',
+  27:'U', 28:'M', 29:'B',
+  32:'U', 31:'M', 30:'B',
+};
+const POS_COLORS = {
+  U: { bg:'#dc2626', fg:'#ffffff' },  // red — upper
+  M: { bg:'#f59e0b', fg:'#ffffff' },  // amber — middle
+  B: { bg:'#6366f1', fg:'#ffffff' },  // indigo — bottom
+  G: { bg:'#22c55e', fg:'#ffffff' },  // green — ground
+};
+const POS_LABELS = { U:'Upper', M:'Middle', B:'Bottom', G:'Ground' };
+
 // ── COLORS ────────────────────────────────────────────────────────────────
 const C = {
   pit:   { cf:'#dbeafe', cs:'#93c5fd', gf:'#eff6ff' },
@@ -209,6 +244,18 @@ function renderCard(id, x, y) {
     'text-anchor':'start', 'dominant-baseline':'central',
     'font-family':FONT, 'font-size':'14', 'font-weight':'400',
     fill:'#dc2626' }, '[' + s.flat + ']'));
+  // Position badge (U/M/B/G) for pit & stack parkings
+  const pos = POS[id];
+  if (pos) {
+    const pc = POS_COLORS[pos];
+    const bw = 28, bh = 20, bx = x + CW - bw - 6, by = y + 6;
+    app(el('rect', { x:bx, y:by, width:bw, height:bh, rx:5,
+      fill:pc.bg }));
+    app(el('text', { x:bx + bw/2, y:by + bh/2 + 1,
+      'text-anchor':'middle', 'dominant-baseline':'central',
+      'font-family':FONT, 'font-size':'13', 'font-weight':'700',
+      fill:pc.fg }, pos));
+  }
 }
 
 // ── RENDER PORTRAIT CARD (puzzle slots 21/22/23) ──────────────────────────
