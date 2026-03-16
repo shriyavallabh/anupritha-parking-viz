@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anupritha B — Vehicle Registry</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────────────────────── */
+  .header {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 36px 24px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header h1 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.025em; }
+  .header p { font-size: 0.82rem; color: #64748b; margin-top: 5px; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; font-weight: 600; color: #3b82f6;
+    text-decoration: none; padding: 8px 14px;
+    border: 1px solid #bfdbfe; border-radius: 8px;
+    background: #eff6ff; white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .nav-back:hover { background: #dbeafe; }
+  .header-divider { max-width: 980px; margin: 0 auto; padding: 0 24px; border-bottom: 1px solid #e2e8f0; }
+
+  .page-wrap { max-width: 980px; margin: 0 auto; padding: 28px 24px 60px; }
+
+  /* ── NOTICE BANNER ──────────────────────────────────────────────────────── */
+  .notice {
+    background: #fefce8; border: 1px solid #fde68a; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 28px;
+    font-size: 0.84rem; color: #92400e; line-height: 1.6;
+  }
+  .notice strong { color: #78350f; }
+
+  /* ── SECTION TITLES ─────────────────────────────────────────────────────── */
+  .section-title {
+    font-size: 1.05rem; font-weight: 700; color: #1e293b;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title .badge {
+    font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 99px;
+    background: #e0f2fe; color: #0369a1;
+  }
+
+  /* ── SUBMISSION FORM ────────────────────────────────────────────────────── */
+  .form-card {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px;
+    padding: 24px; margin-bottom: 32px;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+  }
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-top: 16px;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-field.full { grid-column: 1 / -1; }
+  label { font-size: 0.80rem; font-weight: 600; color: #374151; }
+  label span { color: #dc2626; }
+  select, input[type="text"] {
+    padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px;
+    font-size: 0.88rem; font-family: inherit; color: #0f172a;
+    background: #f9fafb; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  select:focus, input[type="text"]:focus {
+    border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    background: #ffffff;
+  }
+  .form-actions { margin-top: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .btn-submit {
+    padding: 11px 24px; background: #1e293b; color: #ffffff;
+    border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: background 0.15s;
+  }
+  .btn-submit:hover { background: #0f172a; }
+  .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+  .form-status { font-size: 0.82rem; color: #16a34a; font-weight: 500; }
+  .form-status.error { color: #dc2626; }
+
+  /* ── FILTER BAR ─────────────────────────────────────────────────────────── */
+  .filter-bar {
+    display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;
+  }
+  .filter-bar input[type="text"] {
+    flex: 1; min-width: 180px; max-width: 280px;
+  }
+  .filter-bar select { min-width: 140px; }
+  .count-label {
+    margin-left: auto; font-size: 0.78rem; color: #64748b; font-weight: 500;
+    white-space: nowrap; align-self: center;
+  }
+
+  /* ── TABLE ──────────────────────────────────────────────────────────────── */
+  .table-wrap {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+    margin-bottom: 32px;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  thead th {
+    background: #f1f5f9; padding: 11px 14px; text-align: left;
+    font-size: 0.75rem; font-weight: 700; color: #475569;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0; white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid #f1f5f9; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f8fafc; }
+  tbody td { padding: 11px 14px; color: #1e293b; vertical-align: middle; }
+  .flat-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 6px;
+    font-weight: 700; font-size: 0.78rem; background: #f1f5f9; color: #334155;
+  }
+  .type-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 99px;
+    font-weight: 600; font-size: 0.74rem;
+  }
+  .type-badge.fw  { background: #dbeafe; color: #1e40af; }
+  .type-badge.tw  { background: #dcfce7; color: #166534; }
+  .reg-tag {
+    font-family: 'SF Mono', 'Courier New', monospace;
+    font-size: 0.78rem; background: #f1f5f9; color: #334155;
+    padding: 2px 7px; border-radius: 5px; letter-spacing: 0.04em; font-weight: 600;
+  }
+  .source-badge {
+    font-size: 0.70rem; font-weight: 600; padding: 2px 7px; border-radius: 99px;
+  }
+  .source-badge.existing { background: #f0fdf4; color: #16a34a; }
+  .source-badge.new      { background: #eff6ff; color: #1d4ed8; }
+  .empty-row td { text-align: center; padding: 32px; color: #94a3b8; font-size: 0.84rem; }
+
+  /* ── GOOGLE SHEETS SETUP BOX ────────────────────────────────────────────── */
+  .setup-box {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px;
+    padding: 24px; margin-bottom: 32px;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+  }
+  .setup-box summary {
+    cursor: pointer; font-size: 0.88rem; font-weight: 600; color: #374151;
+    display: flex; align-items: center; gap: 8px; list-style: none;
+  }
+  .setup-box summary::before { content: '▶'; font-size: 0.7rem; color: #94a3b8; }
+  details[open] .setup-box summary::before { content: '▼'; }
+  .setup-steps { margin-top: 16px; }
+  .setup-steps ol { padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .setup-steps li { font-size: 0.84rem; color: #374151; line-height: 1.6; }
+  .setup-steps code {
+    background: #f1f5f9; padding: 2px 6px; border-radius: 4px;
+    font-size: 0.80rem; color: #0f172a; font-family: monospace;
+  }
+  .script-block {
+    background: #0f172a; border-radius: 8px; padding: 16px; margin: 12px 0;
+    overflow-x: auto;
+  }
+  .script-block pre {
+    color: #e2e8f0; font-size: 0.78rem; font-family: 'SF Mono', 'Courier New', monospace;
+    line-height: 1.6; white-space: pre;
+  }
+  .url-input-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  .url-input-row input { flex: 1; min-width: 240px; }
+  .btn-save-url {
+    padding: 10px 18px; background: #16a34a; color: #ffffff;
+    border: none; border-radius: 8px; font-size: 0.84rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .btn-save-url:hover { background: #15803d; }
+
+  /* ── CSV DATA BOX ───────────────────────────────────────────────────────── */
+  .csv-box {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 16px; margin-bottom: 32px;
+  }
+  .csv-box summary {
+    cursor: pointer; font-size: 0.84rem; font-weight: 600; color: #374151;
+    list-style: none; display: flex; align-items: center; gap: 8px;
+  }
+  .csv-box summary::before { content: '▶'; font-size: 0.7rem; color: #94a3b8; }
+  details[open] .csv-box summary::before { content: '▼'; }
+  .csv-content {
+    margin-top: 12px; background: #0f172a; border-radius: 8px; padding: 16px;
+    overflow-x: auto; max-height: 320px; overflow-y: auto;
+  }
+  .csv-content pre {
+    color: #e2e8f0; font-size: 0.72rem; font-family: monospace;
+    line-height: 1.5; white-space: pre;
+  }
+
+  @media (max-width: 640px) {
+    .header { padding: 20px 14px; }
+    .page-wrap { padding: 18px 14px 48px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-field.full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Anupritha B &mdash; Vehicle Registry</h1>
+    <p>Register your vehicle &middot; View all submitted records &middot; Deadline: 23 March 2026</p>
+  </div>
+  <a href="index.html" class="nav-back">&#8592; Parking Plan</a>
+</div>
+<div class="header-divider"></div>
+
+<div class="page-wrap">
+
+  <!-- NOTICE -->
+  <div class="notice">
+    <strong>Action Required by 23 March 2026.</strong> Please register all vehicles (2-wheelers and
+    4-wheelers) using the form below. Unregistered vehicles may face access restrictions once
+    society stickers are issued. If you have already submitted your details and nothing has changed,
+    you may ignore this notice.
+  </div>
+
+  <!-- SUBMIT FORM -->
+  <div class="form-card">
+    <div class="section-title">Submit Vehicle Details</div>
+    <form id="vehicleForm" autocomplete="off">
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="fFlat">Flat Number <span>*</span></label>
+          <select id="fFlat" required>
+            <option value="">Select flat...</option>
+            <optgroup label="Floor 1">
+              <option>101</option><option>102</option><option>103</option>
+            </optgroup>
+            <optgroup label="Floor 2">
+              <option>201</option><option>202</option><option>203</option>
+            </optgroup>
+            <optgroup label="Floor 3">
+              <option>301</option><option>302</option><option>303</option>
+            </optgroup>
+            <optgroup label="Floor 4">
+              <option>401</option><option>402</option><option>403</option>
+            </optgroup>
+            <optgroup label="Floor 5">
+              <option>501</option><option>502</option><option>503</option>
+            </optgroup>
+            <optgroup label="Floor 6">
+              <option>601</option><option>602</option><option>603</option>
+            </optgroup>
+            <optgroup label="Floor 7">
+              <option>701</option><option>702</option><option>703</option>
+            </optgroup>
+            <optgroup label="Floor 8">
+              <option>801</option><option>802</option><option>803</option>
+            </optgroup>
+            <optgroup label="Floor 9">
+              <option>901</option><option>902</option><option>903</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="fName">Your Name <span>*</span></label>
+          <input type="text" id="fName" placeholder="e.g. Mr. Sharma" required>
+        </div>
+        <div class="form-field">
+          <label for="fVehicleType">Vehicle Type <span>*</span></label>
+          <select id="fVehicleType" required>
+            <option value="">Select...</option>
+            <option value="4W">4-Wheeler</option>
+            <option value="2W">2-Wheeler</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="fMakeModel">Make &amp; Model <span>*</span></label>
+          <input type="text" id="fMakeModel" placeholder="e.g. Honda City" required>
+        </div>
+        <div class="form-field full">
+          <label for="fReg">Registration Number <span>*</span></label>
+          <input type="text" id="fReg" placeholder="e.g. MH12AB1234" style="text-transform:uppercase" required>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" id="submitBtn">Submit Vehicle</button>
+        <span class="form-status" id="formStatus"></span>
+      </div>
+    </form>
+  </div>
+
+  <!-- LIVE REGISTRY TABLE -->
+  <div class="section-title">
+    Vehicle Registry
+    <span class="badge" id="countBadge">0 records</span>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="searchInput" placeholder="Search flat, name, reg no..." style="flex:1; max-width:300px;">
+    <select id="typeFilter">
+      <option value="">All vehicle types</option>
+      <option value="4W">4-Wheeler</option>
+      <option value="2W">2-Wheeler</option>
+    </select>
+    <span class="count-label" id="filterCount"></span>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="vehicleTable">
+        <thead>
+          <tr>
+            <th>Flat</th>
+            <th>Owner</th>
+            <th>Tenant</th>
+            <th>Type</th>
+            <th>Make &amp; Model</th>
+            <th>Registration No.</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GOOGLE SHEETS SETUP -->
+  <details>
+    <div class="setup-box">
+      <summary>Connect to Google Sheets (live sync setup)</summary>
+      <div class="setup-steps">
+        <p style="font-size:0.82rem;color:#64748b;margin-bottom:10px">
+          Currently running in <strong>offline mode</strong> — new submissions are stored in your browser.
+          Follow these steps to connect to Google Sheets so submissions sync live across all devices.
+        </p>
+        <ol>
+          <li>Create a new <strong>Google Sheet</strong> at <code>sheets.google.com</code>.</li>
+          <li>Rename the first tab to <code>Vehicle Registry</code>. Add a second tab: <code>Form_Submissions</code>.</li>
+          <li>In the <code>Vehicle Registry</code> tab, paste the CSV data from the section below (existing Excel data).</li>
+          <li>Open <strong>Extensions &gt; Apps Script</strong> and paste this code:</li>
+        </ol>
+        <div class="script-block">
+          <pre>function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var data = JSON.parse(e.postData.contents);
+  // Write to Form_Submissions
+  ss.getSheetByName('Form_Submissions').appendRow([
+    new Date(), data.flat, data.name,
+    data.vehicleType, data.makeModel, data.regNumber
+  ]);
+  // Also add to Vehicle Registry
+  ss.getSheetByName('Vehicle Registry').appendRow([
+    data.flat, data.name, '', 'Owner',
+    data.vehicleType, data.makeModel, data.regNumber, 'Active', new Date()
+  ]);
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+        </div>
+        <ol start="5">
+          <li>Click <strong>Deploy &gt; New deployment</strong>. Type: <em>Web app</em>. Execute as: <em>Me</em>. Access: <em>Anyone</em>. Click Deploy and copy the URL.</li>
+          <li>Paste the URL below and click Save:</li>
+        </ol>
+        <div class="url-input-row">
+          <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
+          <button class="btn-save-url" onclick="saveScriptUrl()">Save &amp; Enable Live Sync</button>
+        </div>
+        <p id="urlSaveStatus" style="font-size:0.80rem;color:#16a34a;margin-top:8px;display:none">
+          Google Apps Script URL saved. New form submissions will now sync to Google Sheets.
+        </p>
+      </div>
+    </div>
+  </details>
+
+  <!-- CSV DATA FOR PASTING INTO GOOGLE SHEETS -->
+  <details style="margin-top:16px">
+    <div class="csv-box">
+      <summary>Existing vehicle data — paste into Google Sheet "Vehicle Registry" tab</summary>
+      <div class="csv-content">
+        <pre id="csvOutput"></pre>
+      </div>
+    </div>
+  </details>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ── EXISTING VEHICLE DATA (normalized from Excel) ─────────────────────────
+const EXISTING = [
+  { flat:'103', owner:'Mr. Karulkar',    tenant:'',                          type:'4W', makeModel:'Kia Seltos',        reg:'MH01BT8372' },
+  { flat:'103', owner:'Mr. Karulkar',    tenant:'',                          type:'4W', makeModel:'Kia Carens',        reg:'GJ15CP3971'  },
+  { flat:'103', owner:'Mr. Karulkar',    tenant:'',                          type:'2W', makeModel:'Jupiter',           reg:'MH12VP6689'  },
+  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'4W', makeModel:'Hyundai i10',    reg:'MH12MF6658'  },
+  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'4W', makeModel:'Honda City',     reg:'MH12LJ4365'  },
+  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'2W', makeModel:'Bullet',         reg:'MH12HQ9934'  },
+  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'2W', makeModel:'Suzuki Access',  reg:'MH12HW9934'  },
+  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'2W', makeModel:'Suzuki Access',  reg:'MH12MC9934'  },
+  { flat:'301', owner:'Mr. Belgi',       tenant:'',                          type:'4W', makeModel:'Wagon R',           reg:'MH12EM4096'  },
+  { flat:'301', owner:'Mr. Belgi',       tenant:'',                          type:'2W', makeModel:'TVS Scooty Pep',   reg:'MH12MC1562'  },
+  { flat:'301', owner:'Mr. Belgi',       tenant:'',                          type:'2W', makeModel:'TVS Jupiter',      reg:'MH12PY1869'  },
+  { flat:'302', owner:'Mr. Awachat',     tenant:'',                          type:'4W', makeModel:'TBC',               reg:'MH12PT2399'  },
+  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'4W', makeModel:'VW Polo',           reg:'MH20DV5969'  },
+  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'2W', makeModel:'Pleasure',          reg:'MH04ER4701'  },
+  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'2W', makeModel:'Activa',            reg:'MH12QP8632'  },
+  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'2W', makeModel:'Aprilia',           reg:'MH12NV3326'  },
+  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'4W', makeModel:'Kia Seltos',        reg:'MH14JA7182'  },
+  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'4W', makeModel:'Creta',             reg:'MH12SL3740'  },
+  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'4W', makeModel:'Hyundai i10',       reg:'MH12QM8854'  },
+  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12GM6526'  },
+  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'2W', makeModel:'Honda',             reg:'MVO2010'     },
+  { flat:'503', owner:'Mr. Bhagurkar',   tenant:'Mrs. Anupama Pote',         type:'4W', makeModel:'Honda City',        reg:'MH16BH8833'  },
+  { flat:'503', owner:'Mr. Bhagurkar',   tenant:'Mrs. Anupama Pote',         type:'2W', makeModel:'Honda Aviator',     reg:'MH16BD0057'  },
+  { flat:'503', owner:'Mr. Bhagurkar',   tenant:'Mrs. Anupama Pote',         type:'2W', makeModel:'Bike',              reg:'MH16BX8370'  },
+  { flat:'601', owner:'Mr. Gujar',       tenant:'Mr. Apurrwa Mehta',         type:'4W', makeModel:'Innova',            reg:'MH12NP8015'  },
+  { flat:'601', owner:'Mr. Gujar',       tenant:'Mr. Apurrwa Mehta',         type:'4W', makeModel:'Thar',              reg:'MH12TS6627'  },
+  { flat:'601', owner:'Mr. Gujar',       tenant:'Mr. Apurrwa Mehta',         type:'2W', makeModel:'Bullet',            reg:'MH12LY7976'  },
+  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'4W', makeModel:'Skoda',             reg:'MH12JM4480'  },
+  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'4W', makeModel:'Hyundai i10',       reg:'MH12HL2540'  },
+  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'2W', makeModel:'TVS Jupiter',       reg:'MH12XZ6210'  },
+  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12JX3759'  },
+  { flat:'603', owner:'Mr. Bhagurkar',   tenant:'Mr. Vasant Paluskar',       type:'4W', makeModel:'Wagon R',           reg:'MH12VL0409'  },
+  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'4W', makeModel:'Skoda Rapid',       reg:'MH12NU2501'  },
+  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'2W', makeModel:'Honda Hiness',      reg:'MH12UZ1210'  },
+  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'2W', makeModel:'Bajaj Avenger',     reg:'MH12NV7826'  },
+  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'2W', makeModel:'Triumph Scrambler', reg:'MH12XJ1425'  },
+  { flat:'703', owner:'Mr. Mali',        tenant:'',                          type:'4W', makeModel:'Maruti Ritz',       reg:'MH12FP6473'  },
+  { flat:'703', owner:'Mr. Mali',        tenant:'',                          type:'4W', makeModel:'Fiat Linea',        reg:'MH12LD7190'  },
+  { flat:'703', owner:'Mr. Mali',        tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12LZ8782'  },
+  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'4W', makeModel:'Hyundai Tucson',    reg:'MH12ML2968'  },
+  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'2W', makeModel:'Avenger',           reg:'MH12TW3439'  },
+  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12UZ306'   },
+  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'2W', makeModel:'Ather',             reg:'MH12XW4814'  },
+];
+
+// ── STORAGE KEY ────────────────────────────────────────────────────────────
+const LS_KEY      = 'anupritha_vehicles_v1';
+const LS_URL_KEY  = 'anupritha_script_url';
+
+// ── LOAD SUBMISSIONS FROM LOCALSTORAGE ─────────────────────────────────────
+function loadSubmissions() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveSubmission(row) {
+  const subs = loadSubmissions();
+  subs.push(row);
+  localStorage.setItem(LS_KEY, JSON.stringify(subs));
+}
+
+// ── RENDER TABLE ───────────────────────────────────────────────────────────
+function allRows() {
+  const existing = EXISTING.map(r => ({ ...r, source: 'existing' }));
+  const newSubs  = loadSubmissions().map(r => ({ ...r, source: 'new' }));
+  return [...existing, ...newSubs].sort((a,b) => a.flat.localeCompare(b.flat, undefined, {numeric:true}));
+}
+
+function renderTable(filter) {
+  const rows = allRows();
+  const q   = (filter?.q || '').toLowerCase();
+  const typ = filter?.type || '';
+
+  const filtered = rows.filter(r => {
+    const text = [r.flat, r.owner, r.tenant, r.makeModel, r.reg].join(' ').toLowerCase();
+    return (!q || text.includes(q)) && (!typ || r.type === typ);
+  });
+
+  const tbody = document.getElementById('tableBody');
+  document.getElementById('countBadge').textContent = rows.length + ' records';
+  document.getElementById('filterCount').textContent = filtered.length !== rows.length
+    ? 'Showing ' + filtered.length + ' of ' + rows.length : '';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No records match your search.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => `
+    <tr>
+      <td><span class="flat-badge">${esc(r.flat)}</span></td>
+      <td>${esc(r.owner)}</td>
+      <td>${r.tenant ? esc(r.tenant) : '<span style="color:#94a3b8">—</span>'}</td>
+      <td><span class="type-badge ${r.type==='4W'?'fw':'tw'}">${esc(r.type)}</span></td>
+      <td>${esc(r.makeModel)}</td>
+      <td><span class="reg-tag">${esc(r.reg.toUpperCase())}</span></td>
+      <td><span class="source-badge ${r.source}">${r.source==='existing'?'Existing':'New'}</span></td>
+    </tr>`).join('');
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── SEARCH / FILTER ────────────────────────────────────────────────────────
+function getFilter() {
+  return {
+    q:    document.getElementById('searchInput').value,
+    type: document.getElementById('typeFilter').value,
+  };
+}
+document.getElementById('searchInput').addEventListener('input', () => renderTable(getFilter()));
+document.getElementById('typeFilter').addEventListener('change', () => renderTable(getFilter()));
+
+// ── FORM SUBMIT ────────────────────────────────────────────────────────────
+document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn    = document.getElementById('submitBtn');
+  const status = document.getElementById('formStatus');
+
+  const data = {
+    flat:        document.getElementById('fFlat').value,
+    name:        document.getElementById('fName').value.trim(),
+    vehicleType: document.getElementById('fVehicleType').value,
+    makeModel:   document.getElementById('fMakeModel').value.trim(),
+    regNumber:   document.getElementById('fReg').value.trim().toUpperCase(),
+  };
+
+  if (!data.flat || !data.name || !data.vehicleType || !data.makeModel || !data.regNumber) {
+    status.textContent = 'Please fill in all required fields.';
+    status.className = 'form-status error';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  status.textContent = '';
+  status.className = 'form-status';
+
+  // Save locally first (always works)
+  saveSubmission({ flat:data.flat, owner:data.name, tenant:'', type:data.vehicleType, makeModel:data.makeModel, reg:data.regNumber });
+
+  // Try Google Apps Script if URL configured
+  const scriptUrl = localStorage.getItem(LS_URL_KEY);
+  if (scriptUrl) {
+    try {
+      await fetch(scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      status.textContent = 'Submitted and synced to Google Sheets.';
+    } catch {
+      status.textContent = 'Saved locally. (Google Sheets sync failed — check your script URL.)';
+      status.className = 'form-status error';
+    }
+  } else {
+    status.textContent = 'Saved. Set up Google Sheets (below) for live sync across devices.';
+  }
+
+  this.reset();
+  btn.disabled = false;
+  btn.textContent = 'Submit Vehicle';
+  renderTable(getFilter());
+});
+
+// ── SAVE SCRIPT URL ────────────────────────────────────────────────────────
+function saveScriptUrl() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  if (!url.startsWith('https://script.google.com/')) {
+    alert('Please enter a valid Google Apps Script URL.');
+    return;
+  }
+  localStorage.setItem(LS_URL_KEY, url);
+  const saved = document.getElementById('urlSaveStatus');
+  saved.style.display = 'block';
+  setTimeout(() => saved.style.display = 'none', 4000);
+}
+
+// Pre-fill saved URL
+const savedUrl = localStorage.getItem(LS_URL_KEY);
+if (savedUrl) document.getElementById('scriptUrlInput').value = savedUrl;
+
+// ── CSV OUTPUT ─────────────────────────────────────────────────────────────
+const CSV_HEADER = 'Flat,Owner,Tenant,Resident_Type,Vehicle_Type,Make_Model,Reg_Number,Status';
+const CSV_ROWS = EXISTING.map(r =>
+  [r.flat, r.owner, r.tenant||'', 'Owner', r.type, r.makeModel, r.reg, 'Active']
+    .map(v => v.includes(',') ? '"'+v+'"' : v).join(',')
+);
+document.getElementById('csvOutput').textContent = CSV_HEADER + '\n' + CSV_ROWS.join('\n');
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+renderTable();
+</script>
+</body>
+</html>
