@@ -14,7 +14,7 @@
     min-height: 100vh;
   }
 
-  /* ── HEADER ─────────────────────────────────────────────────────────────── */
+  /* ── HEADER ──────────────────────────────────────────────────────────────── */
   .header {
     max-width: 980px;
     margin: 0 auto;
@@ -47,6 +47,14 @@
     font-size: 0.84rem; color: #92400e; line-height: 1.6;
   }
   .notice strong { color: #78350f; }
+
+  /* ── CONFIG BANNER ──────────────────────────────────────────────────────── */
+  .config-banner {
+    background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 16px;
+    font-size: 0.82rem; color: #9a3412; line-height: 1.5; display: none;
+  }
+  .config-banner a { color: #c2410c; font-weight: 600; }
 
   /* ── SECTION TITLES ─────────────────────────────────────────────────────── */
   .section-title {
@@ -81,6 +89,7 @@
     border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
     background: #ffffff;
   }
+  select:disabled, input:disabled { opacity: 0.5; cursor: not-allowed; }
   .form-actions { margin-top: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .btn-submit {
     padding: 11px 24px; background: #1e293b; color: #ffffff;
@@ -139,26 +148,44 @@
     font-size: 0.78rem; background: #f1f5f9; color: #334155;
     padding: 2px 7px; border-radius: 5px; letter-spacing: 0.04em; font-weight: 600;
   }
-  .source-badge {
-    font-size: 0.70rem; font-weight: 600; padding: 2px 7px; border-radius: 99px;
+  .state-row td {
+    text-align: center; padding: 40px 16px; color: #94a3b8;
+    font-size: 0.84rem; line-height: 1.6;
   }
-  .source-badge.existing { background: #f0fdf4; color: #16a34a; }
-  .source-badge.new      { background: #eff6ff; color: #1d4ed8; }
-  .empty-row td { text-align: center; padding: 32px; color: #94a3b8; font-size: 0.84rem; }
+  .state-row.error td { color: #ef4444; }
 
-  /* ── GOOGLE SHEETS SETUP BOX ────────────────────────────────────────────── */
+  /* Spinner */
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid #e2e8f0; border-top-color: #64748b;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Live indicator */
+  .live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: #22c55e; margin-right: 5px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── APPS SCRIPT SETUP ──────────────────────────────────────────────────── */
   .setup-box {
     background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px;
     padding: 24px; margin-bottom: 32px;
     box-shadow: 0 1px 4px rgba(15,23,42,0.05);
   }
-  .setup-box summary {
-    cursor: pointer; font-size: 0.88rem; font-weight: 600; color: #374151;
-    display: flex; align-items: center; gap: 8px; list-style: none;
+  .setup-title {
+    font-size: 0.95rem; font-weight: 700; color: #1e293b;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
   }
-  .setup-box summary::before { content: '▶'; font-size: 0.7rem; color: #94a3b8; }
-  details[open] .setup-box summary::before { content: '▼'; }
-  .setup-steps { margin-top: 16px; }
+  .setup-title .pill {
+    font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+    background: #fef9c3; color: #854d0e; letter-spacing: 0.03em;
+  }
+  .setup-title .pill.done { background: #dcfce7; color: #166534; }
   .setup-steps ol { padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
   .setup-steps li { font-size: 0.84rem; color: #374151; line-height: 1.6; }
   .setup-steps code {
@@ -173,34 +200,20 @@
     color: #e2e8f0; font-size: 0.78rem; font-family: 'SF Mono', 'Courier New', monospace;
     line-height: 1.6; white-space: pre;
   }
-  .url-input-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  .url-input-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
   .url-input-row input { flex: 1; min-width: 240px; }
   .btn-save-url {
     padding: 10px 18px; background: #16a34a; color: #ffffff;
     border: none; border-radius: 8px; font-size: 0.84rem; font-weight: 600;
-    cursor: pointer; font-family: inherit;
+    cursor: pointer; font-family: inherit; transition: background 0.15s;
   }
   .btn-save-url:hover { background: #15803d; }
+  .url-save-msg { font-size: 0.80rem; color: #16a34a; margin-top: 8px; display: none; font-weight: 500; }
 
-  /* ── CSV DATA BOX ───────────────────────────────────────────────────────── */
-  .csv-box {
-    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
-    padding: 16px; margin-bottom: 32px;
-  }
-  .csv-box summary {
-    cursor: pointer; font-size: 0.84rem; font-weight: 600; color: #374151;
-    list-style: none; display: flex; align-items: center; gap: 8px;
-  }
-  .csv-box summary::before { content: '▶'; font-size: 0.7rem; color: #94a3b8; }
-  details[open] .csv-box summary::before { content: '▼'; }
-  .csv-content {
-    margin-top: 12px; background: #0f172a; border-radius: 8px; padding: 16px;
-    overflow-x: auto; max-height: 320px; overflow-y: auto;
-  }
-  .csv-content pre {
-    color: #e2e8f0; font-size: 0.72rem; font-family: monospace;
-    line-height: 1.5; white-space: pre;
-  }
+  details summary { cursor: pointer; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before { content: '▶  '; font-size: 0.65rem; color: #94a3b8; }
+  details[open] summary::before { content: '▼  '; }
 
   @media (max-width: 640px) {
     .header { padding: 20px 14px; }
@@ -231,9 +244,76 @@
     you may ignore this notice.
   </div>
 
+  <!-- APPS SCRIPT SETUP (shown only when not configured) -->
+  <div class="setup-box" id="setupBox">
+    <div class="setup-title">
+      Connect to Google Sheets
+      <span class="pill" id="setupPill">Setup required</span>
+    </div>
+    <div class="setup-steps">
+      <p style="font-size:0.82rem;color:#64748b;margin-bottom:12px">
+        Paste the Google Apps Script below into your sheet, deploy it, and enter the URL here.
+        Once connected, the form will write directly to the sheet and the table below will
+        reflect any edits you make in the sheet within 1&ndash;2 minutes.
+      </p>
+      <ol>
+        <li>Open your Google Sheet &rarr; <strong>Extensions &rarr; Apps Script</strong>.</li>
+        <li>Delete any existing code. Paste the script below and click <strong>Save</strong>.</li>
+      </ol>
+      <div class="script-block">
+        <pre>// Anupritha B — Vehicle Registry
+// Handles form submissions from the website.
+// Deploy as Web App: Execute as Me, Access: Anyone.
+
+function doGet(e) {
+  var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) || '';
+  var ss     = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet  = ss.getSheetByName('Vehicle Registry');
+
+  if (action === 'write') {
+    var today = Utilities.formatDate(
+      new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy'
+    );
+    sheet.appendRow([
+      e.parameter.flat        || '',
+      e.parameter.owner       || '',
+      '',                          // Tenant (admin fills if needed)
+      'Owner',                     // Resident_Type
+      e.parameter.vehicleType || '',
+      e.parameter.makeModel   || '',
+      e.parameter.regNumber   || '',
+      'Active',
+      today
+    ]);
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ status: 'ready' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      </div>
+      <ol start="3">
+        <li>Click <strong>Deploy &rarr; New deployment</strong>. Type: <em>Web app</em>. Execute as: <em>Me</em>. Who has access: <em>Anyone</em>. Click Deploy &rarr; Authorise.</li>
+        <li>Copy the <strong>Web App URL</strong> and paste it below.</li>
+      </ol>
+      <div class="url-input-row">
+        <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
+        <button class="btn-save-url" onclick="saveScriptUrl()">Save &amp; Enable</button>
+      </div>
+      <div class="url-save-msg" id="urlSaveMsg">Script URL saved. Form submissions will now write directly to your Google Sheet.</div>
+    </div>
+  </div>
+
   <!-- SUBMIT FORM -->
   <div class="form-card">
     <div class="section-title">Submit Vehicle Details</div>
+    <div class="config-banner" id="configBanner">
+      Form submissions are disabled until the Google Apps Script is configured above.
+      <a href="#setupBox" onclick="document.getElementById('setupBox').scrollIntoView({behavior:'smooth'});return false;">Set it up now.</a>
+    </div>
     <form id="vehicleForm" autocomplete="off">
       <div class="form-grid">
         <div class="form-field">
@@ -300,11 +380,11 @@
   <!-- LIVE REGISTRY TABLE -->
   <div class="section-title">
     Vehicle Registry
-    <span class="badge" id="countBadge">0 records</span>
+    <span class="badge" id="countBadge">loading...</span>
   </div>
 
   <div class="filter-bar">
-    <input type="text" id="searchInput" placeholder="Search flat, name, reg no..." style="flex:1; max-width:300px;">
+    <input type="text" id="searchInput" placeholder="Search flat, name, reg no...">
     <select id="typeFilter">
       <option value="">All vehicle types</option>
       <option value="4W">4-Wheeler</option>
@@ -319,197 +399,118 @@
         <thead>
           <tr>
             <th>Flat</th>
-            <th>Owner</th>
+            <th>Owner / Resident</th>
             <th>Tenant</th>
             <th>Type</th>
             <th>Make &amp; Model</th>
             <th>Registration No.</th>
-            <th>Source</th>
           </tr>
         </thead>
         <tbody id="tableBody">
+          <tr class="state-row"><td colspan="6"><span class="spinner"></span>Loading vehicle registry...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- GOOGLE SHEETS SETUP -->
-  <details>
-    <div class="setup-box">
-      <summary>Connect to Google Sheets (live sync setup)</summary>
-      <div class="setup-steps">
-        <p style="font-size:0.82rem;color:#64748b;margin-bottom:10px">
-          Currently running in <strong>offline mode</strong> — new submissions are stored in your browser.
-          Follow these steps to connect to Google Sheets so submissions sync live across all devices.
-        </p>
-        <ol>
-          <li>Create a new <strong>Google Sheet</strong> at <code>sheets.google.com</code>.</li>
-          <li>Rename the first tab to <code>Vehicle Registry</code>. Add a second tab: <code>Form_Submissions</code>.</li>
-          <li>In the <code>Vehicle Registry</code> tab, paste the CSV data from the section below (existing Excel data).</li>
-          <li>Open <strong>Extensions &gt; Apps Script</strong> and paste this code:</li>
-        </ol>
-        <div class="script-block">
-          <pre>function doPost(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var data = JSON.parse(e.postData.contents);
-  // Write to Form_Submissions
-  ss.getSheetByName('Form_Submissions').appendRow([
-    new Date(), data.flat, data.name,
-    data.vehicleType, data.makeModel, data.regNumber
-  ]);
-  // Also add to Vehicle Registry
-  ss.getSheetByName('Vehicle Registry').appendRow([
-    data.flat, data.name, '', 'Owner',
-    data.vehicleType, data.makeModel, data.regNumber, 'Active', new Date()
-  ]);
-  return ContentService
-    .createTextOutput(JSON.stringify({status:'ok'}))
-    .setMimeType(ContentService.MimeType.JSON);
-}</pre>
-        </div>
-        <ol start="5">
-          <li>Click <strong>Deploy &gt; New deployment</strong>. Type: <em>Web app</em>. Execute as: <em>Me</em>. Access: <em>Anyone</em>. Click Deploy and copy the URL.</li>
-          <li>Paste the URL below and click Save:</li>
-        </ol>
-        <div class="url-input-row">
-          <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
-          <button class="btn-save-url" onclick="saveScriptUrl()">Save &amp; Enable Live Sync</button>
-        </div>
-        <p id="urlSaveStatus" style="font-size:0.80rem;color:#16a34a;margin-top:8px;display:none">
-          Google Apps Script URL saved. New form submissions will now sync to Google Sheets.
-        </p>
-      </div>
-    </div>
-  </details>
-
-  <!-- CSV DATA FOR PASTING INTO GOOGLE SHEETS -->
-  <details style="margin-top:16px">
-    <div class="csv-box">
-      <summary>Existing vehicle data — paste into Google Sheet "Vehicle Registry" tab</summary>
-      <div class="csv-content">
-        <pre id="csvOutput"></pre>
-      </div>
-    </div>
-  </details>
-
 </div><!-- /page-wrap -->
 
 <script>
-// ── EXISTING VEHICLE DATA (normalized from Excel) ─────────────────────────
-const EXISTING = [
-  { flat:'103', owner:'Mr. Karulkar',    tenant:'',                          type:'4W', makeModel:'Kia Seltos',        reg:'MH01BT8372' },
-  { flat:'103', owner:'Mr. Karulkar',    tenant:'',                          type:'4W', makeModel:'Kia Carens',        reg:'GJ15CP3971'  },
-  { flat:'103', owner:'Mr. Karulkar',    tenant:'',                          type:'2W', makeModel:'Jupiter',           reg:'MH12VP6689'  },
-  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'4W', makeModel:'Hyundai i10',    reg:'MH12MF6658'  },
-  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'4W', makeModel:'Honda City',     reg:'MH12LJ4365'  },
-  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'2W', makeModel:'Bullet',         reg:'MH12HQ9934'  },
-  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'2W', makeModel:'Suzuki Access',  reg:'MH12HW9934'  },
-  { flat:'201', owner:'Mr. Ponkshe',     tenant:'Mr. Sachin Mahabaleshwarkar', type:'2W', makeModel:'Suzuki Access',  reg:'MH12MC9934'  },
-  { flat:'301', owner:'Mr. Belgi',       tenant:'',                          type:'4W', makeModel:'Wagon R',           reg:'MH12EM4096'  },
-  { flat:'301', owner:'Mr. Belgi',       tenant:'',                          type:'2W', makeModel:'TVS Scooty Pep',   reg:'MH12MC1562'  },
-  { flat:'301', owner:'Mr. Belgi',       tenant:'',                          type:'2W', makeModel:'TVS Jupiter',      reg:'MH12PY1869'  },
-  { flat:'302', owner:'Mr. Awachat',     tenant:'',                          type:'4W', makeModel:'TBC',               reg:'MH12PT2399'  },
-  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'4W', makeModel:'VW Polo',           reg:'MH20DV5969'  },
-  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'2W', makeModel:'Pleasure',          reg:'MH04ER4701'  },
-  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'2W', makeModel:'Activa',            reg:'MH12QP8632'  },
-  { flat:'401', owner:'Mr. Pathak',      tenant:'Mr. Kiran Kamtikar',        type:'2W', makeModel:'Aprilia',           reg:'MH12NV3326'  },
-  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'4W', makeModel:'Kia Seltos',        reg:'MH14JA7182'  },
-  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'4W', makeModel:'Creta',             reg:'MH12SL3740'  },
-  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'4W', makeModel:'Hyundai i10',       reg:'MH12QM8854'  },
-  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12GM6526'  },
-  { flat:'502', owner:'Mr. Bhosle',      tenant:'',                          type:'2W', makeModel:'Honda',             reg:'MVO2010'     },
-  { flat:'503', owner:'Mr. Bhagurkar',   tenant:'Mrs. Anupama Pote',         type:'4W', makeModel:'Honda City',        reg:'MH16BH8833'  },
-  { flat:'503', owner:'Mr. Bhagurkar',   tenant:'Mrs. Anupama Pote',         type:'2W', makeModel:'Honda Aviator',     reg:'MH16BD0057'  },
-  { flat:'503', owner:'Mr. Bhagurkar',   tenant:'Mrs. Anupama Pote',         type:'2W', makeModel:'Bike',              reg:'MH16BX8370'  },
-  { flat:'601', owner:'Mr. Gujar',       tenant:'Mr. Apurrwa Mehta',         type:'4W', makeModel:'Innova',            reg:'MH12NP8015'  },
-  { flat:'601', owner:'Mr. Gujar',       tenant:'Mr. Apurrwa Mehta',         type:'4W', makeModel:'Thar',              reg:'MH12TS6627'  },
-  { flat:'601', owner:'Mr. Gujar',       tenant:'Mr. Apurrwa Mehta',         type:'2W', makeModel:'Bullet',            reg:'MH12LY7976'  },
-  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'4W', makeModel:'Skoda',             reg:'MH12JM4480'  },
-  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'4W', makeModel:'Hyundai i10',       reg:'MH12HL2540'  },
-  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'2W', makeModel:'TVS Jupiter',       reg:'MH12XZ6210'  },
-  { flat:'602', owner:'Mr. Patil',       tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12JX3759'  },
-  { flat:'603', owner:'Mr. Bhagurkar',   tenant:'Mr. Vasant Paluskar',       type:'4W', makeModel:'Wagon R',           reg:'MH12VL0409'  },
-  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'4W', makeModel:'Skoda Rapid',       reg:'MH12NU2501'  },
-  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'2W', makeModel:'Honda Hiness',      reg:'MH12UZ1210'  },
-  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'2W', makeModel:'Bajaj Avenger',     reg:'MH12NV7826'  },
-  { flat:'702', owner:'Mr. D Marathe',   tenant:'Mr. Umesh Jere',            type:'2W', makeModel:'Triumph Scrambler', reg:'MH12XJ1425'  },
-  { flat:'703', owner:'Mr. Mali',        tenant:'',                          type:'4W', makeModel:'Maruti Ritz',       reg:'MH12FP6473'  },
-  { flat:'703', owner:'Mr. Mali',        tenant:'',                          type:'4W', makeModel:'Fiat Linea',        reg:'MH12LD7190'  },
-  { flat:'703', owner:'Mr. Mali',        tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12LZ8782'  },
-  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'4W', makeModel:'Hyundai Tucson',    reg:'MH12ML2968'  },
-  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'2W', makeModel:'Avenger',           reg:'MH12TW3439'  },
-  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'2W', makeModel:'Activa',            reg:'MH12UZ306'   },
-  { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'2W', makeModel:'Ather',             reg:'MH12XW4814'  },
-];
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+// Published CSV from "Vehicle Registry" tab (File > Share > Publish to web)
+const SHEET_CSV  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTM1ApC0W_Xi1JIWU4ri_-bax72LzlmnkvwKaUkQgjJA-Pc9MnPZrfx4feZMkizA9DnMlcMHiIJlBI/pub?gid=122320667&single=true&output=csv';
+const LS_URL_KEY = 'anupritha_script_url';
 
-// ── GOOGLE SHEET CONFIG ────────────────────────────────────────────────────
-const SHEET_ID    = '1uTS_bburhJyg6K6Ka8rOtfj5HhCNjDl7L2INs_SpkzA';
-const SHEET_CSV   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTM1ApC0W_Xi1JIWU4ri_-bax72LzlmnkvwKaUkQgjJA-Pc9MnPZrfx4feZMkizA9DnMlcMHiIJlBI/pub?gid=122320667&single=true&output=csv';
+let allData = [];
 
-// ── STORAGE KEY ────────────────────────────────────────────────────────────
-const LS_KEY      = 'anupritha_vehicles_v1';
-const LS_URL_KEY  = 'anupritha_script_url';
-
-// ── LOAD SUBMISSIONS FROM LOCALSTORAGE ─────────────────────────────────────
-function loadSubmissions() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
-  catch { return []; }
+function getScriptUrl() {
+  return localStorage.getItem(LS_URL_KEY) || '';
 }
 
-function saveSubmission(row) {
-  const subs = loadSubmissions();
-  subs.push(row);
-  localStorage.setItem(LS_KEY, JSON.stringify(subs));
+// ── CSV PARSER ─────────────────────────────────────────────────────────────
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+      else { inQuote = !inQuote; }
+    } else if (ch === ',' && !inQuote) {
+      result.push(cur.trim()); cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  result.push(cur.trim());
+  return result;
 }
 
-// ── FETCH LIVE DATA FROM GOOGLE SHEET ─────────────────────────────────────
-// Parses the published CSV from "Vehicle Registry" tab.
-// CSV columns: Flat,Owner,Tenant,Resident_Type,Vehicle_Type,Make_Model,Reg_Number,Status
-async function fetchSheetRows() {
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  // Expected columns: Flat, Owner, Tenant, Resident_Type, Vehicle_Type, Make_Model, Reg_Number, Status
+  return lines.slice(1)
+    .map(line => {
+      const c = parseCSVLine(line);
+      const flat = c[0] || '';
+      const owner = c[1] || '';
+      const tenant = c[2] || '';
+      const vtype = c[4] || '';
+      const makeModel = c[5] || '';
+      const reg = c[6] || '';
+      if (!flat || !vtype) return null;
+      return { flat, owner, tenant, type: vtype, makeModel, reg };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.flat.localeCompare(b.flat, undefined, { numeric: true }));
+}
+
+// ── FETCH & RENDER ─────────────────────────────────────────────────────────
+async function fetchAndRender(silent) {
+  if (!silent) {
+    document.getElementById('tableBody').innerHTML =
+      '<tr class="state-row"><td colspan="6"><span class="spinner"></span>Loading vehicle registry...</td></tr>';
+    document.getElementById('countBadge').textContent = 'loading...';
+  }
   try {
-    const res = await fetch(SHEET_CSV);
-    if (!res.ok) return null;
+    const res = await fetch(SHEET_CSV + '&_=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
-    const lines = text.trim().split('\n').slice(1); // skip header
-    return lines
-      .map(line => {
-        // Simple CSV split (handles quoted fields)
-        const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
-        const clean = cols.map(c => c.replace(/^"|"$/g, '').trim());
-        const [flat, owner, tenant, , vtype, makeModel, reg, status] = clean;
-        return flat && vtype && reg
-          ? { flat, owner, tenant: tenant||'', type: vtype, makeModel, reg, source: 'sheet' }
-          : null;
-      })
-      .filter(Boolean)
-      .sort((a,b) => a.flat.localeCompare(b.flat, undefined, {numeric:true}));
-  } catch { return null; }
-}
-
-// ── RENDER TABLE ───────────────────────────────────────────────────────────
-function allRows() {
-  const existing = EXISTING.map(r => ({ ...r, source: 'existing' }));
-  const newSubs  = loadSubmissions().map(r => ({ ...r, source: 'new' }));
-  return [...existing, ...newSubs].sort((a,b) => a.flat.localeCompare(b.flat, undefined, {numeric:true}));
+    allData = parseCSV(text);
+    renderTable(getFilter());
+  } catch (err) {
+    if (!silent) {
+      document.getElementById('tableBody').innerHTML =
+        '<tr class="state-row error"><td colspan="6">Could not load the vehicle registry. Please refresh the page.</td></tr>';
+      document.getElementById('countBadge').textContent = 'error';
+    }
+  }
 }
 
 function renderTable(filter) {
-  const rows = allRows();
-  const q   = (filter?.q || '').toLowerCase();
-  const typ = filter?.type || '';
+  const q   = (filter && filter.q   || '').toLowerCase();
+  const typ = (filter && filter.type || '');
 
-  const filtered = rows.filter(r => {
+  const filtered = allData.filter(r => {
     const text = [r.flat, r.owner, r.tenant, r.makeModel, r.reg].join(' ').toLowerCase();
     return (!q || text.includes(q)) && (!typ || r.type === typ);
   });
 
   const tbody = document.getElementById('tableBody');
-  document.getElementById('countBadge').textContent = rows.length + ' records';
-  document.getElementById('filterCount').textContent = filtered.length !== rows.length
-    ? 'Showing ' + filtered.length + ' of ' + rows.length : '';
+  const badge = document.getElementById('countBadge');
+  const countLabel = document.getElementById('filterCount');
 
+  badge.innerHTML = '<span class="live-dot"></span>' + allData.length + ' vehicles';
+  countLabel.textContent = filtered.length !== allData.length
+    ? 'Showing ' + filtered.length + ' of ' + allData.length : '';
+
+  if (allData.length === 0) {
+    tbody.innerHTML = '<tr class="state-row"><td colspan="6">No vehicles registered yet.</td></tr>';
+    return;
+  }
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No records match your search.</td></tr>';
+    tbody.innerHTML = '<tr class="state-row"><td colspan="6">No records match your search.</td></tr>';
     return;
   }
 
@@ -518,166 +519,117 @@ function renderTable(filter) {
       <td><span class="flat-badge">${esc(r.flat)}</span></td>
       <td>${esc(r.owner)}</td>
       <td>${r.tenant ? esc(r.tenant) : '<span style="color:#94a3b8">—</span>'}</td>
-      <td><span class="type-badge ${r.type==='4W'?'fw':'tw'}">${esc(r.type)}</span></td>
+      <td><span class="type-badge ${r.type === '4W' ? 'fw' : 'tw'}">${esc(r.type)}</span></td>
       <td>${esc(r.makeModel)}</td>
       <td><span class="reg-tag">${esc(r.reg.toUpperCase())}</span></td>
-      <td><span class="source-badge ${r.source}">${r.source==='existing'?'Existing':'New'}</span></td>
     </tr>`).join('');
 }
 
 function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ── SEARCH / FILTER ────────────────────────────────────────────────────────
 function getFilter() {
   return {
     q:    document.getElementById('searchInput').value,
     type: document.getElementById('typeFilter').value,
   };
 }
+
 document.getElementById('searchInput').addEventListener('input', () => renderTable(getFilter()));
 document.getElementById('typeFilter').addEventListener('change', () => renderTable(getFilter()));
 
 // ── FORM SUBMIT ────────────────────────────────────────────────────────────
 document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const btn    = document.getElementById('submitBtn');
-  const status = document.getElementById('formStatus');
 
-  const data = {
-    flat:        document.getElementById('fFlat').value,
-    name:        document.getElementById('fName').value.trim(),
-    vehicleType: document.getElementById('fVehicleType').value,
-    makeModel:   document.getElementById('fMakeModel').value.trim(),
-    regNumber:   document.getElementById('fReg').value.trim().toUpperCase(),
-  };
+  const scriptUrl = getScriptUrl();
+  const status    = document.getElementById('formStatus');
+  const btn       = document.getElementById('submitBtn');
 
-  if (!data.flat || !data.name || !data.vehicleType || !data.makeModel || !data.regNumber) {
-    status.textContent = 'Please fill in all required fields.';
+  if (!scriptUrl) {
+    status.textContent = 'Please configure the Google Apps Script first (see setup above).';
     status.className = 'form-status error';
+    document.getElementById('setupBox').scrollIntoView({ behavior: 'smooth' });
     return;
   }
+
+  const flat        = document.getElementById('fFlat').value;
+  const owner       = document.getElementById('fName').value.trim();
+  const vehicleType = document.getElementById('fVehicleType').value;
+  const makeModel   = document.getElementById('fMakeModel').value.trim();
+  const regNumber   = document.getElementById('fReg').value.trim().toUpperCase();
 
   btn.disabled = true;
   btn.textContent = 'Submitting...';
   status.textContent = '';
   status.className = 'form-status';
 
-  // Save locally first (always works)
-  saveSubmission({ flat:data.flat, owner:data.name, tenant:'', type:data.vehicleType, makeModel:data.makeModel, reg:data.regNumber });
+  try {
+    const url = scriptUrl
+      + '?action=write'
+      + '&flat='        + encodeURIComponent(flat)
+      + '&owner='       + encodeURIComponent(owner)
+      + '&vehicleType=' + encodeURIComponent(vehicleType)
+      + '&makeModel='   + encodeURIComponent(makeModel)
+      + '&regNumber='   + encodeURIComponent(regNumber);
 
-  // Try Google Apps Script if URL configured
-  const scriptUrl = localStorage.getItem(LS_URL_KEY);
-  if (scriptUrl) {
-    try {
-      await fetch(scriptUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      status.textContent = 'Submitted and synced to Google Sheets.';
-    } catch {
-      status.textContent = 'Saved locally. (Google Sheets sync failed — check your script URL.)';
-      status.className = 'form-status error';
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (json.status === 'ok') {
+      status.textContent = 'Registered successfully. The table below will update in about 1-2 minutes.';
+      status.className = 'form-status';
+      this.reset();
+      // Re-fetch after 90s to pick up the published CSV cache refresh
+      setTimeout(() => fetchAndRender(true), 90000);
+    } else {
+      throw new Error('Script returned unexpected response');
     }
-  } else {
-    status.textContent = 'Saved. Set up Google Sheets (below) for live sync across devices.';
+  } catch {
+    status.textContent = 'Submission failed. Check that the Apps Script URL is correct and the script is deployed.';
+    status.className = 'form-status error';
   }
 
-  this.reset();
   btn.disabled = false;
   btn.textContent = 'Submit Vehicle';
-  renderTable(getFilter());
 });
 
 // ── SAVE SCRIPT URL ────────────────────────────────────────────────────────
 function saveScriptUrl() {
-  const url = document.getElementById('scriptUrlInput').value.trim();
+  const input = document.getElementById('scriptUrlInput');
+  const url = input.value.trim();
   if (!url.startsWith('https://script.google.com/')) {
-    alert('Please enter a valid Google Apps Script URL.');
+    alert('Please enter a valid Google Apps Script URL (starts with https://script.google.com/).');
     return;
   }
   localStorage.setItem(LS_URL_KEY, url);
-  const saved = document.getElementById('urlSaveStatus');
-  saved.style.display = 'block';
-  setTimeout(() => saved.style.display = 'none', 4000);
+  applyConfigState();
+  const msg = document.getElementById('urlSaveMsg');
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 5000);
 }
 
-// Pre-fill saved URL
-const savedUrl = localStorage.getItem(LS_URL_KEY);
-if (savedUrl) document.getElementById('scriptUrlInput').value = savedUrl;
-
-// ── CSV OUTPUT ─────────────────────────────────────────────────────────────
-const CSV_HEADER = 'Flat,Owner,Tenant,Resident_Type,Vehicle_Type,Make_Model,Reg_Number,Status';
-const CSV_ROWS = EXISTING.map(r =>
-  [r.flat, r.owner, r.tenant||'', 'Owner', r.type, r.makeModel, r.reg, 'Active']
-    .map(v => v.includes(',') ? '"'+v+'"' : v).join(',')
-);
-document.getElementById('csvOutput').textContent = CSV_HEADER + '\n' + CSV_ROWS.join('\n');
+function applyConfigState() {
+  const configured = !!getScriptUrl();
+  // Update setup pill
+  const pill = document.getElementById('setupPill');
+  if (pill) {
+    pill.textContent = configured ? 'Connected' : 'Setup required';
+    pill.className = 'pill' + (configured ? ' done' : '');
+  }
+  // Show/hide config banner above form
+  document.getElementById('configBanner').style.display = configured ? 'none' : 'block';
+  // Pre-fill saved URL
+  const savedUrl = getScriptUrl();
+  if (savedUrl) document.getElementById('scriptUrlInput').value = savedUrl;
+}
 
 // ── INIT ───────────────────────────────────────────────────────────────────
-// Try to load live data from Google Sheet first; fall back to hardcoded data
-let LIVE_ROWS = null;
-
-async function init() {
-  renderTable(); // show hardcoded data immediately
-  const sheetRows = await fetchSheetRows();
-  if (sheetRows && sheetRows.length > 0) {
-    LIVE_ROWS = sheetRows;
-    // Override allRows to use live sheet data when available
-    window._liveMode = true;
-    renderLiveTable(getFilter());
-    // Refresh every 60 seconds
-    setInterval(async () => {
-      const fresh = await fetchSheetRows();
-      if (fresh) { LIVE_ROWS = fresh; renderLiveTable(getFilter()); }
-    }, 60000);
-  }
-}
-
-function renderLiveTable(filter) {
-  if (!LIVE_ROWS) return;
-  const rows = [...LIVE_ROWS, ...loadSubmissions().map(r => ({...r, source:'new'}))];
-  const q   = (filter?.q || '').toLowerCase();
-  const typ = filter?.type || '';
-  const filtered = rows.filter(r => {
-    const text = [r.flat, r.owner, r.tenant, r.makeModel, r.reg].join(' ').toLowerCase();
-    return (!q || text.includes(q)) && (!typ || r.type === typ);
-  });
-  const tbody = document.getElementById('tableBody');
-  document.getElementById('countBadge').textContent = rows.length + ' records (live)';
-  document.getElementById('filterCount').textContent = filtered.length !== rows.length
-    ? 'Showing ' + filtered.length + ' of ' + rows.length : '';
-  if (filtered.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No records match your search.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = filtered.map(r => `
-    <tr>
-      <td><span class="flat-badge">${esc(r.flat)}</span></td>
-      <td>${esc(r.owner)}</td>
-      <td>${r.tenant ? esc(r.tenant) : '<span style="color:#94a3b8">—</span>'}</td>
-      <td><span class="type-badge ${r.type==='4W'?'fw':'tw'}">${esc(r.type)}</span></td>
-      <td>${esc(r.makeModel)}</td>
-      <td><span class="reg-tag">${esc(r.reg.toUpperCase())}</span></td>
-      <td><span class="source-badge ${r.source==='new'?'new':'existing'}">${r.source==='new'?'New':'Sheet'}</span></td>
-    </tr>`).join('');
-}
-
-// Patch filter listeners to use live table when active
-document.getElementById('searchInput').removeEventListener('input', ()=>{});
-document.getElementById('typeFilter').removeEventListener('change', ()=>{});
-document.getElementById('searchInput').addEventListener('input', () => {
-  window._liveMode ? renderLiveTable(getFilter()) : renderTable(getFilter());
-});
-document.getElementById('typeFilter').addEventListener('change', () => {
-  window._liveMode ? renderLiveTable(getFilter()) : renderTable(getFilter());
-});
-
-init();
+applyConfigState();
+fetchAndRender();
+// Auto-refresh every 60 seconds
+setInterval(() => fetchAndRender(true), 60000);
 </script>
 </body>
 </html>
