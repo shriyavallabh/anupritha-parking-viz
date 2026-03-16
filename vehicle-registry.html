@@ -48,13 +48,6 @@
   }
   .notice strong { color: #78350f; }
 
-  /* ── CONFIG BANNER ──────────────────────────────────────────────────────── */
-  .config-banner {
-    background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px;
-    padding: 12px 16px; margin-bottom: 16px;
-    font-size: 0.82rem; color: #9a3412; line-height: 1.5; display: none;
-  }
-  .config-banner a { color: #c2410c; font-weight: 600; }
 
   /* ── SECTION TITLES ─────────────────────────────────────────────────────── */
   .section-title {
@@ -171,49 +164,6 @@
   }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-  /* ── APPS SCRIPT SETUP ──────────────────────────────────────────────────── */
-  .setup-box {
-    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px;
-    padding: 24px; margin-bottom: 32px;
-    box-shadow: 0 1px 4px rgba(15,23,42,0.05);
-  }
-  .setup-title {
-    font-size: 0.95rem; font-weight: 700; color: #1e293b;
-    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-  }
-  .setup-title .pill {
-    font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 99px;
-    background: #fef9c3; color: #854d0e; letter-spacing: 0.03em;
-  }
-  .setup-title .pill.done { background: #dcfce7; color: #166534; }
-  .setup-steps ol { padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
-  .setup-steps li { font-size: 0.84rem; color: #374151; line-height: 1.6; }
-  .setup-steps code {
-    background: #f1f5f9; padding: 2px 6px; border-radius: 4px;
-    font-size: 0.80rem; color: #0f172a; font-family: monospace;
-  }
-  .script-block {
-    background: #0f172a; border-radius: 8px; padding: 16px; margin: 12px 0;
-    overflow-x: auto;
-  }
-  .script-block pre {
-    color: #e2e8f0; font-size: 0.78rem; font-family: 'SF Mono', 'Courier New', monospace;
-    line-height: 1.6; white-space: pre;
-  }
-  .url-input-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
-  .url-input-row input { flex: 1; min-width: 240px; }
-  .btn-save-url {
-    padding: 10px 18px; background: #16a34a; color: #ffffff;
-    border: none; border-radius: 8px; font-size: 0.84rem; font-weight: 600;
-    cursor: pointer; font-family: inherit; transition: background 0.15s;
-  }
-  .btn-save-url:hover { background: #15803d; }
-  .url-save-msg { font-size: 0.80rem; color: #16a34a; margin-top: 8px; display: none; font-weight: 500; }
-
-  details summary { cursor: pointer; list-style: none; }
-  details summary::-webkit-details-marker { display: none; }
-  details summary::before { content: '▶  '; font-size: 0.65rem; color: #94a3b8; }
-  details[open] summary::before { content: '▼  '; }
 
   @media (max-width: 640px) {
     .header { padding: 20px 14px; }
@@ -244,76 +194,9 @@
     you may ignore this notice.
   </div>
 
-  <!-- APPS SCRIPT SETUP (shown only when not configured) -->
-  <div class="setup-box" id="setupBox">
-    <div class="setup-title">
-      Connect to Google Sheets
-      <span class="pill" id="setupPill">Setup required</span>
-    </div>
-    <div class="setup-steps">
-      <p style="font-size:0.82rem;color:#64748b;margin-bottom:12px">
-        Paste the Google Apps Script below into your sheet, deploy it, and enter the URL here.
-        Once connected, the form will write directly to the sheet and the table below will
-        reflect any edits you make in the sheet within 1&ndash;2 minutes.
-      </p>
-      <ol>
-        <li>Open your Google Sheet &rarr; <strong>Extensions &rarr; Apps Script</strong>.</li>
-        <li>Delete any existing code. Paste the script below and click <strong>Save</strong>.</li>
-      </ol>
-      <div class="script-block">
-        <pre>// Anupritha B — Vehicle Registry
-// Handles form submissions from the website.
-// Deploy as Web App: Execute as Me, Access: Anyone.
-
-function doGet(e) {
-  var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) || '';
-  var ss     = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet  = ss.getSheetByName('Vehicle Registry');
-
-  if (action === 'write') {
-    var today = Utilities.formatDate(
-      new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy'
-    );
-    sheet.appendRow([
-      e.parameter.flat        || '',
-      e.parameter.owner       || '',
-      '',                          // Tenant (admin fills if needed)
-      'Owner',                     // Resident_Type
-      e.parameter.vehicleType || '',
-      e.parameter.makeModel   || '',
-      e.parameter.regNumber   || '',
-      'Active',
-      today
-    ]);
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'ok' }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  return ContentService
-    .createTextOutput(JSON.stringify({ status: 'ready' }))
-    .setMimeType(ContentService.MimeType.JSON);
-}</pre>
-      </div>
-      <ol start="3">
-        <li>Click <strong>Deploy &rarr; New deployment</strong>. Type: <em>Web app</em>. Execute as: <em>Me</em>. Who has access: <em>Anyone</em>. Click Deploy &rarr; Authorise.</li>
-        <li>Copy the <strong>Web App URL</strong> and paste it below.</li>
-      </ol>
-      <div class="url-input-row">
-        <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
-        <button class="btn-save-url" onclick="saveScriptUrl()">Save &amp; Enable</button>
-      </div>
-      <div class="url-save-msg" id="urlSaveMsg">Script URL saved. Form submissions will now write directly to your Google Sheet.</div>
-    </div>
-  </div>
-
   <!-- SUBMIT FORM -->
   <div class="form-card">
     <div class="section-title">Submit Vehicle Details</div>
-    <div class="config-banner" id="configBanner">
-      Form submissions are disabled until the Google Apps Script is configured above.
-      <a href="#setupBox" onclick="document.getElementById('setupBox').scrollIntoView({behavior:'smooth'});return false;">Set it up now.</a>
-    </div>
     <form id="vehicleForm" autocomplete="off">
       <div class="form-grid">
         <div class="form-field">
@@ -419,13 +302,9 @@ function doGet(e) {
 // ── CONFIG ─────────────────────────────────────────────────────────────────
 // Published CSV from "Vehicle Registry" tab (File > Share > Publish to web)
 const SHEET_CSV  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTM1ApC0W_Xi1JIWU4ri_-bax72LzlmnkvwKaUkQgjJA-Pc9MnPZrfx4feZMkizA9DnMlcMHiIJlBI/pub?gid=122320667&single=true&output=csv';
-const LS_URL_KEY = 'anupritha_script_url';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAzTzudF_G5o-6HoqN65mHvX5SwOZ2_UH3XP416r0g7bPjQoVVz2t7mWoeToMydlDFjg/exec';
 
 let allData = [];
-
-function getScriptUrl() {
-  return localStorage.getItem(LS_URL_KEY) || '';
-}
 
 // ── CSV PARSER ─────────────────────────────────────────────────────────────
 function parseCSVLine(line) {
@@ -543,16 +422,8 @@ document.getElementById('typeFilter').addEventListener('change', () => renderTab
 document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
-  const scriptUrl = getScriptUrl();
-  const status    = document.getElementById('formStatus');
-  const btn       = document.getElementById('submitBtn');
-
-  if (!scriptUrl) {
-    status.textContent = 'Please configure the Google Apps Script first (see setup above).';
-    status.className = 'form-status error';
-    document.getElementById('setupBox').scrollIntoView({ behavior: 'smooth' });
-    return;
-  }
+  const status = document.getElementById('formStatus');
+  const btn    = document.getElementById('submitBtn');
 
   const flat        = document.getElementById('fFlat').value;
   const owner       = document.getElementById('fName').value.trim();
@@ -566,7 +437,7 @@ document.getElementById('vehicleForm').addEventListener('submit', async function
   status.className = 'form-status';
 
   try {
-    const url = scriptUrl
+    const url = SCRIPT_URL
       + '?action=write'
       + '&flat='        + encodeURIComponent(flat)
       + '&owner='       + encodeURIComponent(owner)
@@ -595,38 +466,7 @@ document.getElementById('vehicleForm').addEventListener('submit', async function
   btn.textContent = 'Submit Vehicle';
 });
 
-// ── SAVE SCRIPT URL ────────────────────────────────────────────────────────
-function saveScriptUrl() {
-  const input = document.getElementById('scriptUrlInput');
-  const url = input.value.trim();
-  if (!url.startsWith('https://script.google.com/')) {
-    alert('Please enter a valid Google Apps Script URL (starts with https://script.google.com/).');
-    return;
-  }
-  localStorage.setItem(LS_URL_KEY, url);
-  applyConfigState();
-  const msg = document.getElementById('urlSaveMsg');
-  msg.style.display = 'block';
-  setTimeout(() => { msg.style.display = 'none'; }, 5000);
-}
-
-function applyConfigState() {
-  const configured = !!getScriptUrl();
-  // Update setup pill
-  const pill = document.getElementById('setupPill');
-  if (pill) {
-    pill.textContent = configured ? 'Connected' : 'Setup required';
-    pill.className = 'pill' + (configured ? ' done' : '');
-  }
-  // Show/hide config banner above form
-  document.getElementById('configBanner').style.display = configured ? 'none' : 'block';
-  // Pre-fill saved URL
-  const savedUrl = getScriptUrl();
-  if (savedUrl) document.getElementById('scriptUrlInput').value = savedUrl;
-}
-
 // ── INIT ───────────────────────────────────────────────────────────────────
-applyConfigState();
 fetchAndRender();
 // Auto-refresh every 60 seconds
 setInterval(() => fetchAndRender(true), 60000);
