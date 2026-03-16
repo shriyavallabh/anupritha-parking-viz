@@ -239,7 +239,7 @@
         <div class="form-field">
           <label for="fName">Owner Name <span>*</span></label>
           <input type="text" id="fName" placeholder="e.g. Mr. Sharma" required>
-          <span class="field-hint" id="fNameHint" style="display:none">Auto-filled from registry. Edit only if incorrect.</span>
+          <span class="field-hint" id="fNameHint" style="display:none">Auto-filled from society records. Owner name is fixed.</span>
         </div>
         <div class="form-field">
           <label for="fTenant">Tenant Name</label>
@@ -452,14 +452,25 @@ fRegInput.addEventListener('blur', () => {
   }
 });
 
-// ── OWNER AUTO-FILL ────────────────────────────────────────────────────────
+// ── OWNER LOOKUP (fixed — flat + owner = primary key) ──────────────────────
+const FLAT_OWNERS = {
+  '101': 'Mr. Marukumar',  '102': 'Mr. Naik',        '103': 'Mr. Karulkar',
+  '201': 'Mr. Ponkshe',    '202': 'Mrs. Tonapi',      '203': 'Mr. Damle',
+  '301': 'Mr. Belgi',      '302': 'Mr. Awachat',      '303': 'Mrs. Kelkar',
+  '401': 'Mr. Pathak',     '402': 'Mr. Apte',         '403': 'Mr. Sambre',
+  '501': 'Mr. Wagal',      '502': 'Mr. Bhosle',       '503': 'Mr. Bhagurkar',
+  '601': 'Mr. Gujar',      '602': 'Mr. Patil',        '603': 'Mr. Bhagurkar',
+  '701': 'Mr. O. Marathe', '702': 'Mr. D. Marathe',   '703': 'Mr. Mali',
+  '801': 'Mr. Sant',       '802': 'Mrs. Mahimkar',    '803': 'Mr. Ratnaparkhi',
+  '901': 'Mr. Pethkar',    '902': 'Mr. Atre',         '903': 'Mr. Deshpande',
+};
+
 document.getElementById('fFlat').addEventListener('change', function() {
-  const flat     = this.value;
-  const nameEl   = document.getElementById('fName');
-  const hintEl   = document.getElementById('fNameHint');
-  const match    = allData.find(r => r.flat === flat);
-  if (match && match.owner) {
-    nameEl.value    = match.owner;
+  const nameEl = document.getElementById('fName');
+  const hintEl = document.getElementById('fNameHint');
+  const owner  = FLAT_OWNERS[this.value];
+  if (owner) {
+    nameEl.value    = owner;
     nameEl.disabled = true;
     hintEl.style.display = 'block';
   } else {
@@ -512,7 +523,7 @@ document.getElementById('vehicleForm').addEventListener('submit', async function
     status.textContent = 'Registered successfully. Confirmed in the sheet within 1-2 minutes.';
     status.className = 'form-status';
 
-    // Re-enable owner name field before reset
+    // Reset form — owner field re-enables naturally when flat resets to empty
     document.getElementById('fName').disabled = false;
     document.getElementById('fNameHint').style.display = 'none';
     this.reset();
