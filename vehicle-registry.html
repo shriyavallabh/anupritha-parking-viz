@@ -442,6 +442,10 @@ const EXISTING = [
   { flat:'801', owner:'Mr. Sant',        tenant:'',                          type:'2W', makeModel:'Ather',             reg:'MH12XW4814'  },
 ];
 
+// ── GOOGLE SHEET CONFIG ────────────────────────────────────────────────────
+const SHEET_ID    = '1uTS_bburhJyg6K6Ka8rOtfj5HhCNjDl7L2INs_SpkzA';
+const SHEET_CSV   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Vehicle%20Registry`;
+
 // ── STORAGE KEY ────────────────────────────────────────────────────────────
 const LS_KEY      = 'anupritha_vehicles_v1';
 const LS_URL_KEY  = 'anupritha_script_url';
@@ -456,6 +460,30 @@ function saveSubmission(row) {
   const subs = loadSubmissions();
   subs.push(row);
   localStorage.setItem(LS_KEY, JSON.stringify(subs));
+}
+
+// ── FETCH LIVE DATA FROM GOOGLE SHEET ─────────────────────────────────────
+// Parses the published CSV from "Vehicle Registry" tab.
+// CSV columns: Flat,Owner,Tenant,Resident_Type,Vehicle_Type,Make_Model,Reg_Number,Status
+async function fetchSheetRows() {
+  try {
+    const res = await fetch(SHEET_CSV);
+    if (!res.ok) return null;
+    const text = await res.text();
+    const lines = text.trim().split('\n').slice(1); // skip header
+    return lines
+      .map(line => {
+        // Simple CSV split (handles quoted fields)
+        const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+        const clean = cols.map(c => c.replace(/^"|"$/g, '').trim());
+        const [flat, owner, tenant, , vtype, makeModel, reg, status] = clean;
+        return flat && vtype && reg
+          ? { flat, owner, tenant: tenant||'', type: vtype, makeModel, reg, source: 'sheet' }
+          : null;
+      })
+      .filter(Boolean)
+      .sort((a,b) => a.flat.localeCompare(b.flat, undefined, {numeric:true}));
+  } catch { return null; }
 }
 
 // ── RENDER TABLE ───────────────────────────────────────────────────────────
@@ -591,7 +619,65 @@ const CSV_ROWS = EXISTING.map(r =>
 document.getElementById('csvOutput').textContent = CSV_HEADER + '\n' + CSV_ROWS.join('\n');
 
 // ── INIT ───────────────────────────────────────────────────────────────────
-renderTable();
+// Try to load live data from Google Sheet first; fall back to hardcoded data
+let LIVE_ROWS = null;
+
+async function init() {
+  renderTable(); // show hardcoded data immediately
+  const sheetRows = await fetchSheetRows();
+  if (sheetRows && sheetRows.length > 0) {
+    LIVE_ROWS = sheetRows;
+    // Override allRows to use live sheet data when available
+    window._liveMode = true;
+    renderLiveTable(getFilter());
+    // Refresh every 60 seconds
+    setInterval(async () => {
+      const fresh = await fetchSheetRows();
+      if (fresh) { LIVE_ROWS = fresh; renderLiveTable(getFilter()); }
+    }, 60000);
+  }
+}
+
+function renderLiveTable(filter) {
+  if (!LIVE_ROWS) return;
+  const rows = [...LIVE_ROWS, ...loadSubmissions().map(r => ({...r, source:'new'}))];
+  const q   = (filter?.q || '').toLowerCase();
+  const typ = filter?.type || '';
+  const filtered = rows.filter(r => {
+    const text = [r.flat, r.owner, r.tenant, r.makeModel, r.reg].join(' ').toLowerCase();
+    return (!q || text.includes(q)) && (!typ || r.type === typ);
+  });
+  const tbody = document.getElementById('tableBody');
+  document.getElementById('countBadge').textContent = rows.length + ' records (live)';
+  document.getElementById('filterCount').textContent = filtered.length !== rows.length
+    ? 'Showing ' + filtered.length + ' of ' + rows.length : '';
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No records match your search.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(r => `
+    <tr>
+      <td><span class="flat-badge">${esc(r.flat)}</span></td>
+      <td>${esc(r.owner)}</td>
+      <td>${r.tenant ? esc(r.tenant) : '<span style="color:#94a3b8">—</span>'}</td>
+      <td><span class="type-badge ${r.type==='4W'?'fw':'tw'}">${esc(r.type)}</span></td>
+      <td>${esc(r.makeModel)}</td>
+      <td><span class="reg-tag">${esc(r.reg.toUpperCase())}</span></td>
+      <td><span class="source-badge ${r.source==='new'?'new':'existing'}">${r.source==='new'?'New':'Sheet'}</span></td>
+    </tr>`).join('');
+}
+
+// Patch filter listeners to use live table when active
+document.getElementById('searchInput').removeEventListener('input', ()=>{});
+document.getElementById('typeFilter').removeEventListener('change', ()=>{});
+document.getElementById('searchInput').addEventListener('input', () => {
+  window._liveMode ? renderLiveTable(getFilter()) : renderTable(getFilter());
+});
+document.getElementById('typeFilter').addEventListener('change', () => {
+  window._liveMode ? renderLiveTable(getFilter()) : renderTable(getFilter());
+});
+
+init();
 </script>
 </body>
 </html>
