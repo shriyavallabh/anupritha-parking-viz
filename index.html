@@ -82,6 +82,26 @@
   </div>
 </div>
 
+<!-- Parking Registry Table -->
+<div class="table-wrap" style="max-width:900px;margin:0 auto 60px;padding:0 24px">
+  <h2 style="font-family:'Inter',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:12px;letter-spacing:-0.02em">Parking Registry — Complete Slot List</h2>
+  <div style="overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(15,23,42,0.06)">
+    <table id="parkingTable" style="width:100%;border-collapse:collapse;font-family:'Inter',system-ui,sans-serif;font-size:0.82rem;background:#fff">
+      <thead>
+        <tr style="background:#f1f5f9">
+          <th style="padding:10px 14px;text-align:center;font-weight:600;color:#334155;border-bottom:2px solid #e2e8f0;white-space:nowrap">Sr.</th>
+          <th style="padding:10px 14px;text-align:center;font-weight:600;color:#334155;border-bottom:2px solid #e2e8f0;white-space:nowrap">Parking No.</th>
+          <th style="padding:10px 14px;text-align:left;font-weight:600;color:#334155;border-bottom:2px solid #e2e8f0">Owner</th>
+          <th style="padding:10px 14px;text-align:center;font-weight:600;color:#334155;border-bottom:2px solid #e2e8f0">Flat</th>
+          <th style="padding:10px 14px;text-align:center;font-weight:600;color:#334155;border-bottom:2px solid #e2e8f0">Position</th>
+          <th style="padding:10px 14px;text-align:center;font-weight:600;color:#334155;border-bottom:2px solid #e2e8f0">Type</th>
+        </tr>
+      </thead>
+      <tbody id="parkingTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
 <script>
 // ──────────────────────────────────────────────────────────────────────────
 // Anupritha B — Parking Plan  |  ViewBox 0 0 1740 1560
@@ -417,6 +437,49 @@ app(el('text', { x:CZ_MID, y:1538,
 // ── SITE BOUNDARY ─────────────────────────────────────────────────────────
 app(el('rect', { x:0,y:0, width:TOT_W, height:1560,
   fill:'none', stroke:'#cbd5e1', 'stroke-width':8 }));
+
+// ── PARKING REGISTRY TABLE ──────────────────────────────────────────────
+(function() {
+  const tbody = document.getElementById('parkingTableBody');
+  const TYPE_BADGE = {
+    pit:    { bg:'#dbeafe', border:'#93c5fd', label:'Pit' },
+    conv:   { bg:'#dcfce7', border:'#86efac', label:'Conventional' },
+    stack:  { bg:'#fef9c3', border:'#fcd34d', label:'Stack' },
+    puzzle: { bg:'#ffedd5', border:'#fdba74', label:'Puzzle' },
+  };
+  const POS_BADGE = {
+    U: { bg:'#dc2626', label:'Upper' },
+    M: { bg:'#f59e0b', label:'Middle' },
+    B: { bg:'#6366f1', label:'Bottom' },
+    G: { bg:'#22c55e', label:'Ground' },
+  };
+  let sr = 1;
+  for (let id = 1; id <= 35; id++) {
+    const s = SLOTS[id];
+    if (!s) continue;
+    const isVacant = s.name === 'Vacant';
+    const t = TYPE_BADGE[s.type];
+    const pos = POS[id];
+    const p = pos ? POS_BADGE[pos] : null;
+    const stripe = sr % 2 === 0 ? '#f8fafc' : '#ffffff';
+    const tr = document.createElement('tr');
+    tr.style.cssText = 'background:' + stripe;
+    const cell = 'padding:8px 14px;border-bottom:1px solid #f1f5f9;';
+    tr.innerHTML =
+      '<td style="' + cell + 'text-align:center;color:#64748b;font-weight:500">' + sr + '</td>' +
+      '<td style="' + cell + 'text-align:center;font-weight:700;color:#0f172a">' + id + '</td>' +
+      '<td style="' + cell + 'text-align:left;font-weight:' + (isVacant ? '400;color:#94a3b8;font-style:italic' : '500;color:#1e293b') + '">' + s.name + '</td>' +
+      '<td style="' + cell + 'text-align:center;color:#dc2626;font-weight:500">' + s.flat + '</td>' +
+      '<td style="' + cell + 'text-align:center">' +
+        (p ? '<span style="display:inline-block;padding:2px 8px;border-radius:5px;background:' + p.bg + ';color:#fff;font-size:0.72rem;font-weight:700">' + p.label + '</span>' : '<span style="color:#cbd5e1">—</span>') +
+      '</td>' +
+      '<td style="' + cell + 'text-align:center">' +
+        '<span style="display:inline-block;padding:2px 10px;border-radius:5px;background:' + t.bg + ';border:1px solid ' + t.border + ';font-size:0.72rem;font-weight:600;color:#334155">' + (isVacant ? 'Vacant' : t.label) + '</span>' +
+      '</td>';
+    tbody.appendChild(tr);
+    sr++;
+  }
+})();
 </script>
 </body>
 </html>
